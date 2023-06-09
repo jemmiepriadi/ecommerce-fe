@@ -54,7 +54,7 @@ export default class Navigation extends Component {
                 <span className={style.header__optionLineTwo}>Order History</span>
               </NavLink>
 
-              <NavLink href='/orderss' className={style.header__option}>
+              <NavLink href='/orders' className={style.header__option}>
                 <span className={style.header__optionLineOne}><AssignmentIcon /></span>
                 <span className={style.header__optionLineTwo}>Orders</span>
               </NavLink>
@@ -75,7 +75,7 @@ export default class Navigation extends Component {
               </NavLink>
               
             
-              <NavLink className={style.header__optionBasket}>
+              <NavLink href='/shopping-cart' className={style.header__optionBasket}>
                 <Badge badgeContent={2} color='secondary'>
                   <ShoppingBasketIcon />
                 </Badge>

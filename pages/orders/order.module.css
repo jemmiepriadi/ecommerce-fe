@@ -23,6 +23,11 @@
     overflow: hidden;
     margin: 25px;
   }
+  .p {
+    white-space: pre-line;
+    overflow: auto;
+    max-width: 300px;
+  }
   .big_img img{
     width: 500px;
     height: 300px;
@@ -35,6 +40,7 @@
     max-width: 500px;
     min-width: 290px;
     margin: 25px;
+    object-fit: cover;
   }
   .box .row{
     display: flex;  

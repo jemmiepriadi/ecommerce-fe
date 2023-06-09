@@ -16,7 +16,8 @@ export default class Order extends Component {
             cart: {},
             isSignedIn: false,
             showLoginModal: false,
-            showRegisterModal:false
+            showRegisterModal:false,
+            accepted: false,
           }
       }
       closeLoginModal = () => {
@@ -46,7 +47,7 @@ export default class Order extends Component {
             <div className={style.details} >
             <div className='row'>
                 <div className='col'>
-                    sasknsknas
+                    <h1>{this.state.accepted == false? 'New Order' : 'Order being proccesed'}</h1>
                 </div>
             </div>
             <div className='row'>
@@ -56,43 +57,24 @@ export default class Order extends Component {
                     </div>
                 </div>
                <div className='col'>
-                <div className={style.box}>
+                <div className={style.box} style={{whiteSpace:'breakSpaces'}}>
                     <div className={style.row}>
-                    <h2>asncjscas</h2>
-                    <span>acs saksac</span>
+                      <h2>asncjscas</h2>
+                      <span>acs saksac</span>
                     </div>
                     <h3>$</h3>
-                    {/* <Colors colors={item.colors} /> */}
-                    <p>ascbasbisabasisac</p>
-                    <p>csaknscaknsaiks</p>
-                    {/* <DetailsThumb images={item.src} tab={this.handleTab} myRef={this.myRef} /> */}
-                    <ButtonGroup>
-                    <Button
-                        aria-label="increase"
-                        onClick={() => {
-                        this.setState({cartCount: this.state.cartCount - 1})
-                        }}
-                    >
-                        <RemoveIcon fontSize="small" />
-                    </Button>
-                    <input style={{width:'15%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})}/>
-                    <Button
-                        aria-label="increase"
-                        onClick={() => {
-                        this.setState({cartCount: this.state.cartCount+1})
-                        }}
-                    >
-                        <AddIcon fontSize="small" />
-                    </Button>
-                    </ButtonGroup>
+                    <h5><strong>Address</strong></h5>
+                    <div className={style.p}>Gang 4 Jalan Pademangan II A No.32, RT.11/RW.6, East Pademangan, North Jakarta City, Jakarta, Indonesia</div>
+                    <input style={{width:'15%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})} readOnly/>
                     <div>
-                    {this.state.cartCount == 0 && <p style={{color: 'red'}}>Minimum Item is 1!</p>}
-                    <Button disabled={this.state.cartCount == 0} className={style.cart} onClick={()=>{}}>Add to cart</Button>
+                      {this.state.cartCount == 0 && <p style={{color: 'red'}}>Minimum Item is 1!</p>}
+                      <Button  className={`${style.cart} `} onClick={()=>{}}>Decline</Button>
+                      <Button style={{float: 'right'}} className={style.cart} onClick={()=>{}}>Accept</Button>
                     </div>
                 </div>
                </div>
                 
-                </div>
+              </div>
             </div>
         </div>
       </div>
