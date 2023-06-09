@@ -2,8 +2,6 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Navigation from '../components/nav/navigation'
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import LoginModal from '../components/auth/loginModal';
 import { Component } from 'react';
 import RegisterModal from '../components/auth/registerModal';

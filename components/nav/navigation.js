@@ -4,12 +4,14 @@ import style from './navigation.module.css'
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { Badge } from '@mui/material';
-import { NavLink } from 'react-bootstrap';
-// import { NavLink } from 'react-bootstrap';
+import { Button, NavLink } from 'react-bootstrap';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import HistoryIcon from '@mui/icons-material/History';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LoginModal from '../auth/loginModal';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import { FolderCopyTwoTone } from '@mui/icons-material';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -28,43 +30,56 @@ export default class Navigation extends Component {
   }
   render() {
     return (
-      <div style={{position: 'sticky'}}>
+      <div style={{position: 'sticky', top: '0'}}>
         <div className={style.header}>
             <h1 className={` ${style.title}`} style={{marginRight:'10px', color:'#3366CC'}}>
               <a href="/">E-SHOP</a>
             </h1>
             <div className={style.header__search}>
               <input className={style.header__searchInput} type="text" />
-              <SearchIcon className={style.header__searchIcon} />
+              <Button className={style.header__searchIcon}>
+                <SearchIcon  />
+              </Button>
             </div>
 
             <nav className={style.header__nav}>
               
-                <NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
-                  <span className={style.header__optionLineOne}><AccountCircleIcon /></span>
-                  <span className={style.header__optionLineTwo}>Sign In</span>
-                </NavLink>
+              <NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
+                <span className={style.header__optionLineOne}><AccountCircleIcon /></span>
+                <span className={style.header__optionLineTwo}>Sign In</span>
+              </NavLink>
               
+              <NavLink className={style.header__option}>
+                <span className={style.header__optionLineOne}><HistoryIcon /></span>
+                <span className={style.header__optionLineTwo}>Order History</span>
+              </NavLink>
 
+              <NavLink href='/orderss' className={style.header__option}>
+                <span className={style.header__optionLineOne}><AssignmentIcon /></span>
+                <span className={style.header__optionLineTwo}>Orders</span>
+              </NavLink>
               
-                <NavLink className={style.header__option}>
-                  <span className={style.header__optionLineOne}><HistoryIcon /></span>
-                  <span className={style.header__optionLineTwo}>Orders</span>
-                </NavLink>
-              
-              
+              <NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
+                <span className={style.header__optionLineOne}><InventoryIcon /></span>
+                <span className={style.header__optionLineTwo}>My Products</span>
+              </NavLink>
 
               <NavLink className={style.header__option} onClick={()=>this.props.handleChange("showRegisterModal", true)}>
                 <span className={style.header__optionLineOne}><PersonAddIcon /></span>
                 <span className={style.header__optionLineTwo}>Sign Up</span>
               </NavLink>
 
+              <NavLink  href='/account' className={style.header__option} >
+                <span className={style.header__optionLineOne}><ManageAccountsIcon /></span>
+                <span className={style.header__optionLineTwo}>Account</span>
+              </NavLink>
               
-                <NavLink className={style.header__optionBasket}>
-                  <Badge badgeContent={2} color='secondary'>
-                    <ShoppingBasketIcon />
-                  </Badge>
-                </NavLink>
+            
+              <NavLink className={style.header__optionBasket}>
+                <Badge badgeContent={2} color='secondary'>
+                  <ShoppingBasketIcon />
+                </Badge>
+              </NavLink>
               
             </nav>
           </div>
