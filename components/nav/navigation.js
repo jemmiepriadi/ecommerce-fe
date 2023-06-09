@@ -50,7 +50,7 @@ export default class Navigation extends Component {
                 <span className={style.header__optionLineTwo}>Sign In</span>
               </NavLink>
               
-              <NavLink className={style.header__option}>
+              <NavLink href='/order-history' className={style.header__option}>
                 <span className={style.header__optionLineOne}><HistoryIcon /></span>
                 <span className={style.header__optionLineTwo}>Order History</span>
               </NavLink>
@@ -60,7 +60,7 @@ export default class Navigation extends Component {
                 <span className={style.header__optionLineTwo}>Orders</span>
               </NavLink>
               
-              <NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
+              <NavLink href='/product/my-product' className={style.header__option} >
                 <span className={style.header__optionLineOne}><InventoryIcon /></span>
                 <span className={style.header__optionLineTwo}>My Products</span>
               </NavLink>

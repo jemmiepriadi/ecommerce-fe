@@ -1,16 +1,15 @@
 import React, { Component } from 'react'
-import Navigation from '../../../components/nav/navigation';
-import RegisterModal from '../../../components/auth/registerModal';
-import LoginModal from '../../../components/auth/loginModal';
+import styles from '../../styles/Home.module.css'
+import style from './history.module.css'
+import Navigation from '../../components/nav/navigation';
+import RegisterModal from '../../components/auth/registerModal';
+import LoginModal from '../../components/auth/loginModal';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import { Button, ButtonGroup } from '@mui/material';
-import style from './my-product.module.css'
-import styles from '../../../styles/Home.module.css'
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import AccountModal from '../../../components/account';
-import ProductModal from '../../../components/product/productModal';
+import AccountModal from '../../components/account';
 
-export default class MyProduct extends Component {
+export default class index extends Component {
     constructor(props) {
         super(props);
           this.state = {
@@ -18,9 +17,8 @@ export default class MyProduct extends Component {
             cart: {},
             isSignedIn: false,
             showLoginModal: false,
-            showProductModal: false,
             showRegisterModal:false,
-            showAccountModal: false,
+            showAccountModal: false
           }
       }
       closeLoginModal = () => {
@@ -34,16 +32,10 @@ export default class MyProduct extends Component {
           showRegisterModal: false
         })
       }
-
+    
       closeAccountModal = () => {
         this.setState({
           showAccountModal: false
-        })
-      }
-
-      closeProductModal = () => {
-        this.setState({
-          showProductModal: false
         })
       }
       
@@ -58,17 +50,13 @@ export default class MyProduct extends Component {
         {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
         {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
         {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
-        {this.state.showProductModal &&  <ProductModal show={this.state.showProductModal} closeProductModal={this.closeProductModal}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <div className={style.app}>
         <table className="table table-borderless table-shopping-cart" >
           <thead className="text-muted">
             <tr className="small text-uppercase">
               <th scope="col">Product</th>
-              <th scope="col" width="250">Description</th>
-              <th scope="col" width="120">Price</th>
-              <th scope="col" className="text-right" width="200"> </th>
-              
+              <th scope="col" className="text-right" width="200">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -77,24 +65,13 @@ export default class MyProduct extends Component {
                   <figure className="itemside">
                       <div className="aside"><img src="https://b2912710.smushcdn.com/2912710/wp-content/uploads/2021/11/IMAG_12_cover-1024x687.jpg?lossy=1&strip=1&webp=1" style={{maxWidth: '100px'}} className="img-sm" /></div>
                       <figcaption className="info">
-                          <p href="#"  style={{color: 'white'}} className="title ">Some name of item goes here nice</p>
+                          <p href="#" style={{color:'white'}} className="title ">Some name of item goes here nice</p>
                           <p className="text-muted small">Size: XL, Color: blue, <br /> Brand: Gucci</p>
                       </figcaption>
                   </figure>
               </td>
               <td> 
-                <p  style={{color: 'white'}}>this is a descripiton</p>
-              </td>
-              <td> 
-                  <div className="price-wrap"> 
-                      <p style={{color: 'white'}} className="price">$</p> 
-                  </div> 
-              </td>
-              <td className="text-right"> 
-                <Button style={{backgroundColor:'transparent', color:'white'}} onClick={()=>{this.handleChange("showProductModal", true)}} className="btn btn-light"> <EditIcon /></Button>
-              </td>
-              <td style={{color: 'white'}}>
-                <Button style={{backgroundColor:'transparent', color:'white'}} className="btn btn-light"> <DeleteIcon /></Button>
+                <p className="text-right text-light">arrived</p>
               </td>
           </tr>
           <tr style={{borderTop:'1px solid #eaeaea'}}>
@@ -103,7 +80,7 @@ export default class MyProduct extends Component {
                       <div className="aside"><img src="https://www.imagdisplays.co.uk/wp-content/uploads/2021/04/PHOTO-2020-08-13-16-07-05.jpg" style={{maxWidth:"100px"}} className="img-sm" /></div>
                       <figcaption className="info">
                           <a href="#" className="title text-dark">Product name  goes here nice</a>
-                          <p className="text-muted small">Size: XL, Color: blue, <br /> Brand: Gucci</p>
+                          <p className="text-muted small">Quantity: XL, Color: blue, <br /> Brand: Gucci</p>
                       </figcaption>
                   </figure>
               </td>
@@ -115,6 +92,7 @@ export default class MyProduct extends Component {
                       this.setState({cartCount: this.state.cartCount - 1})
                     }}
                   >
+                    <RemoveIcon fontSize="small" />
                   </Button>
                   <input style={{width:'100%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})}/>
                   <Button
@@ -123,6 +101,7 @@ export default class MyProduct extends Component {
                       this.setState({cartCount: this.state.cartCount+1})
                     }}
                   >
+                    <AddIcon fontSize="small" />
                   </Button>
                 </ButtonGroup>
               </td>
@@ -155,6 +134,7 @@ export default class MyProduct extends Component {
                       this.setState({cartCount: this.state.cartCount - 1})
                     }}
                   >
+                    <RemoveIcon fontSize="small" />
                   </Button>
                   <input style={{width:'100%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})}/>
                   <Button
@@ -163,6 +143,7 @@ export default class MyProduct extends Component {
                       this.setState({cartCount: this.state.cartCount+1})
                     }}
                   >
+                    <AddIcon fontSize="small" />
                   </Button>
                 </ButtonGroup>
               </td>

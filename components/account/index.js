@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
 import style from '../../styles/Home.module.css'
-import styles from './account.module.css'
 import { Modal } from 'react-bootstrap';
-import Navigation from '../nav/navigation';
-import RegisterModal from '../auth/registerModal';
-import LoginModal from '../auth/loginModal';
 import { Field, Form, Formik } from 'formik';
 
 export default class AccountModal extends Component {
@@ -36,14 +32,14 @@ export default class AccountModal extends Component {
         })
       }
   render() {
-    const { show, closeLoginModal} = this.props;
+    const { show, closeAccountModal} = this.props;
     return (
-        <Modal className={style.modal_overlay} show={show}  onHide={closeLoginModal}>
+        <Modal className={style.modal_overlay} show={show}  onHide={closeAccountModal}>
           <Modal.Header className="d-flex justify-content-between align-items-center">
               <h1 className="title-text">
-                  Login
+                  Account
               </h1>
-              <button onClick={closeLoginModal} className="btn btn-danger">x</button>
+              <button onClick={closeAccountModal} className="btn btn-danger">x</button>
           </Modal.Header>
           <Modal.Body style={{alignItems:'center'}}>
               <Body />
@@ -63,7 +59,7 @@ class Body extends Component {
                 <Formik
                     initialValues={{email: '',password: ''}}
                     onSubmit={this.submit}
-                    component={LoginForm}
+                    component={AccountForm}
                 />
             </div>
       </div>
@@ -71,7 +67,7 @@ class Body extends Component {
   }
 }
 
-class LoginForm extends Component {
+class AccountForm extends Component {
     render(){
         return(
             <Form>

@@ -102,7 +102,12 @@ export default class index extends Component {
                   </div> 
               </td>
               <td className="text-right"> 
-              <Button style={{backgroundColor:'transparent', color:'white'}} className="btn btn-light"> <DeleteIcon /></Button>
+                <Button style={{backgroundColor:'transparent', color:'white'}} className="btn btn-light"> <DeleteIcon /></Button>
+                <figcaption className="info">
+                  <br/>
+                  <br />
+                  <Button className='btn btn-primary'>Checkout</Button>
+                </figcaption>
               </td>
           </tr>
           <tr style={{borderTop:'1px solid #eaeaea'}}>

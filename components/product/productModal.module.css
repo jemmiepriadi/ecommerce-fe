@@ -1,0 +1,39 @@
+.app {
+    max-width: 1200px;
+    width:70%;
+    margin: 100px auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 5px white;
+    background-color: white;
+}
+
+.modal {
+    background: white;
+    /* height:100%; */
+    /* width:100%; */
+    border-radius: 15px;
+    padding: 15px;
+  }
+  
+  .modal_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* width: 100%; */
+    color: black;
+    /* height: 100%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-body {
+    padding-top: 10px;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 25px;
+  }
