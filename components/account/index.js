@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import style from '../../styles/Home.module.css'
 import styles from './account.module.css'
 import { Modal } from 'react-bootstrap';
-import Navigation from '../../components/nav/navigation';
-import RegisterModal from '../../components/auth/registerModal';
-import LoginModal from '../../components/auth/loginModal';
+import Navigation from '../nav/navigation';
+import RegisterModal from '../auth/registerModal';
+import LoginModal from '../auth/loginModal';
 import { Field, Form, Formik } from 'formik';
 
-export default class Account extends Component {
+export default class AccountModal extends Component {
     constructor(props) {
         super(props);
           this.state = {
@@ -36,16 +36,19 @@ export default class Account extends Component {
         })
       }
   render() {
+    const { show, closeLoginModal} = this.props;
     return (
-        <div className={style.container}>
-          {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
-          {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
-          <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
-            <div className={`${style.main} ${styles.app}`} style={{color:'#000'}}>
-                <Body />
-            </div>
-            {/* <Modal show={true}></Modal> */}
-        </div>
+        <Modal className={style.modal_overlay} show={show}  onHide={closeLoginModal}>
+          <Modal.Header className="d-flex justify-content-between align-items-center">
+              <h1 className="title-text">
+                  Login
+              </h1>
+              <button onClick={closeLoginModal} className="btn btn-danger">x</button>
+          </Modal.Header>
+          <Modal.Body style={{alignItems:'center'}}>
+              <Body />
+          </Modal.Body>
+        </Modal>
     )
   }
 }
@@ -54,16 +57,16 @@ export default class Account extends Component {
 class Body extends Component {
   render() {
     return (
-        <div className={'d-flex flex-column'} >
-                <h3 className={'align-self-center'} style={{'textAlign':'center'}}>Account</h3>
-                <div className='align-self-center' style={{width:'500px', justifyContent:'center'}}>
-                    <Formik
-                        initialValues={{name: '',address: ''}}
-                        onSubmit={this.submit}
-                        component={LoginForm}
-                    />
-                </div>
-        </div>
+      <div className={'d-flex flex-column'} style={{color: '#000'}} >
+            <h3 className={'align-self-center'} style={{'textAlign':'center'}}>Login</h3>
+            <div className='align-self-center' style={{width:'300px'}}>
+                <Formik
+                    initialValues={{email: '',password: ''}}
+                    onSubmit={this.submit}
+                    component={LoginForm}
+                />
+            </div>
+      </div>
     )
   }
 }

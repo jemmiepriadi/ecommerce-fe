@@ -20,7 +20,8 @@ export default class Navigation extends Component {
         cartCount: 0,
         isSignedIn: false,
         showLoginModal: false,
-        showRegisterModal:false
+        showRegisterModal:false,
+        showAccountModal: false
       }
   }
   closeLoginModal = () => {
@@ -69,7 +70,7 @@ export default class Navigation extends Component {
                 <span className={style.header__optionLineTwo}>Sign Up</span>
               </NavLink>
 
-              <NavLink  href='/account' className={style.header__option} >
+              <NavLink  className={style.header__option} onClick={() => this.props.handleChange("showAccountModal", true)}>
                 <span className={style.header__optionLineOne}><ManageAccountsIcon /></span>
                 <span className={style.header__optionLineTwo}>Account</span>
               </NavLink>

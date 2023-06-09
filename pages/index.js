@@ -5,6 +5,7 @@ import Navigation from '../components/nav/navigation'
 import LoginModal from '../components/auth/loginModal';
 import { Component } from 'react';
 import RegisterModal from '../components/auth/registerModal';
+import AccountModal from '../components/account';
 
 export default class Home extends Component {
   constructor(props) {
@@ -13,7 +14,8 @@ export default class Home extends Component {
         cartCount: 0,
         isSignedIn: false,
         showLoginModal: false,
-        showRegisterModal:false
+        showRegisterModal:false,
+        showAccountModal: false
       }
   }
   closeLoginModal = () => {
@@ -25,6 +27,12 @@ export default class Home extends Component {
   closeRegisterModal = () => {
     this.setState({
       showRegisterModal: false
+    })
+  }
+
+  closeAccountModal = () => {
+    this.setState({
+      showAccountModal: false
     })
   }
   
@@ -56,7 +64,7 @@ export default class Home extends Component {
   
           {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
           {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
-  
+          {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
           <div className={styles.grid}>
             <a href="https://nextjs.org/docs" className={styles.card}>
               <h2>Documentation &rarr;</h2>

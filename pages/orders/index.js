@@ -4,9 +4,8 @@ import style from './order.module.css'
 import Navigation from '../../components/nav/navigation';
 import RegisterModal from '../../components/auth/registerModal';
 import LoginModal from '../../components/auth/loginModal';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import { Button, ButtonGroup } from '@mui/material';
+import AccountModal from '../../components/account';
 
 export default class Order extends Component {
     constructor(props) {
@@ -17,6 +16,7 @@ export default class Order extends Component {
             isSignedIn: false,
             showLoginModal: false,
             showRegisterModal:false,
+            showAccountModal: false,
             accepted: false,
           }
       }
@@ -31,6 +31,12 @@ export default class Order extends Component {
           showRegisterModal: false
         })
       }
+
+      closeAccountModal = () => {
+        this.setState({
+          showAccountModal: false
+        })
+      }
       
       handleChange(fieldName, value) {
         this.setState({
@@ -42,6 +48,7 @@ export default class Order extends Component {
       <div className={styles.container}>
         {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
           {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
+          {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
           <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <div className={style.app}>
             <div className={style.details} >
