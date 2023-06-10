@@ -139,7 +139,7 @@ export default class MyProduct extends Component {
           <tr>
               <td>
                   <figure className="itemside">
-                      <div className="aside"><img src="assets/images/items/3.jpg" className="img-sm" /></div>
+                      <div className="aside"><img src="https://ecommerce-jemmi.s3.ap-southeast-2.amazonaws.com/Screenshot%202023-06-10%20at%2008.22.15.png" style={{maxWidth:"100px"}} className="img-sm" /></div>
                       <figcaption className="info">
                           <a href="#" className="title text-dark">Another name of some product goes just here</a>
                           <p className="small text-muted">Size: XL, Color: blue,  Brand: Tissot</p>
