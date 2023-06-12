@@ -6,6 +6,7 @@ import { Field, Form, Formik } from 'formik';
 import Cookies from 'js-cookie';
 import * as authApi from '../../constant/apis/auth'
 import  Router  from 'next/router';
+import { setCookie } from 'cookies-next';
 
 export default class LoginModal extends Component {
   render() {
@@ -48,18 +49,17 @@ class Body extends Component {
             } else {
                 console.log('we are running on the server');
             }
-            console.log(responseToken)
             const user = login?.data?.user;
+            if(responseToken)setCookie('auth_token',responseToken);
             if (localStorage) {
-                if(responseToken)localStorage.setItem('auth_token',responseToken);
                 if(user){
                     localStorage.setItem('user',JSON.stringify(user))
                     localStorage.setItem('username', user.Username)
                 }
-                // if(!localStorage.getItem("address") && (user.Address && user.Address != ""))localStorage.setItem('address', user.Address)
-                // if(!localStorage.getItem("phoneNumber")(user.PhoneNumber && user.PhoneNumber != ""))localStorage.setItem('phoneNumber', user.PhoneNumber)
+                if(!localStorage.getItem("address") && (user.Address && user.Address != ""))localStorage.setItem('address', user.Address)
+                if(!localStorage.getItem("phoneNumber") && (user.PhoneNumber && user.PhoneNumber != ""))localStorage.setItem('phoneNumber', user.PhoneNumber)
             }
-            Router.reload()
+            // Router.reload()
         } catch (e) {
              console.log(e)
         }

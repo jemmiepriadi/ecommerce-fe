@@ -8,6 +8,9 @@ import { Button, ButtonGroup } from '@mui/material';
 import LoginModal from '../../components/auth/loginModal';
 import RegisterModal from '../../components/auth/registerModal';
 import AccountModal from '../../components/account';
+import Router  from 'next/router';
+import * as productApi from '../../constant/apis/product'
+import * as shoppingCartApi from '../../constant/apis/shoppingCart'
 
 export default class ProductDetail extends Component {
   constructor(props) {
@@ -17,7 +20,9 @@ export default class ProductDetail extends Component {
         cart: {},
         isSignedIn: false,
         showLoginModal: false,
-        showRegisterModal:false
+        showRegisterModal:false,
+        product: {},
+        user: {}
       }
   }
   closeLoginModal = () => {
@@ -43,6 +48,45 @@ export default class ProductDetail extends Component {
         [fieldName]: value,
     })
   }
+
+  componentDidMount =async () => {
+    const productId = Router.query.productId
+    if(localStorage){
+      let user = localStorage.getItem("user")
+      this.setState({
+        user: user,
+      })
+    }
+    try{
+      let promise = await productApi.getAllProducts({id: productId})
+      let response = promise.data.data.data[0]
+      this.setState({
+        product: response
+      })
+    }catch(e){
+
+    }
+  }
+  onSubmit = async() =>{
+    try{
+      let cart = {
+        ID: 1,
+        Quantity: 1,
+        ConsumerID: this.state.user ? this.state.user.Consumer.ID : null ,
+        Quantity: this.state.cartCount,
+        Product:this.state.product
+      }
+      if(localStorage){
+        localStorage.setItem("cart", cart)
+      }
+      if(this.state?.user && this.state?.user?.Consumer?.ID){
+        let promise = await shoppingCartApi.addShoppingCart(cart,{consumerID: this.state.user.consumer.ID})
+        let response = promise?.data
+      }
+    }catch(e){
+
+    }
+  }
   render() {
     return (
       <div className={styles.container}>
@@ -54,19 +98,16 @@ export default class ProductDetail extends Component {
           <div className={productStyle.app}>
             <div className={productStyle.details} >
               <div className={productStyle.big_img}>
-                <img src={'https://www.imagdisplays.co.uk/wp-content/uploads/2021/04/PHOTO-2020-08-13-16-07-05.jpg'} alt=""/>
+                <img src={this.state.product.Image} alt=""/>
               </div>
               <div className={productStyle.box}>
                 <div className={productStyle.row}>
-                  <h2>asncjscas</h2>
-                  <span>acs saksac</span>
+                  <h2>{this.state.product.Name}</h2>
                 </div>
-                <h3>$</h3>
+                <h3>$ {this.state.product.Price}</h3>
                 {/* <Colors colors={item.colors} /> */}
-                <p>ascbasbisabasisac</p>
-                <div className={productStyle.p}>csaknscaknsaikscsaknscaknsaikscsak nscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscakn saikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscakn saikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscak nsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknscaknsaikscsaknsc aknsaikscsaknscaknsaikscsaknscaknsaiks sjbsasa</div>
+                <div className={productStyle.p}>{this.state.product.Description}</div>
 
-                {/* <DetailsThumb images={item.src} tab={this.handleTab} myRef={this.myRef} /> */}
                 <ButtonGroup>
                   <Button
                     aria-label="increase"
@@ -88,7 +129,7 @@ export default class ProductDetail extends Component {
                 </ButtonGroup>
                 <div>
                   {this.state.cartCount == 0 && <p style={{color: 'red'}}>Minimum Item is 1!</p>}
-                  <Button disabled={this.state.cartCount == 0} className={productStyle.cart} onClick={()=>{}}>Add to cart</Button>
+                  {(!this.state?.user || this.state.user.UserType == "consumer") && <Button disabled={this.state.cartCount == 0} className={productStyle.cart} onClick={()=>{this.onSubmit}}>Add to cart</Button>}
                 </div>
               </div>
               

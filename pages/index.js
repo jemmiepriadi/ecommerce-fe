@@ -114,7 +114,6 @@ export default class Home extends Component {
   
           <p className={styles.description}>
             Best Products Here By Searching
-            {/* <code className={styles.code}>pages/index.js</code> */}
           </p>
   
           {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
@@ -131,10 +130,9 @@ export default class Home extends Component {
                 {this.state.products.map((product, i)=>{
                 return (
                   <a key={product.ID}
-                    href=""
+                    href={"/product/" + product.ID}
                     className={styles.card}
                   >
-                    {i}
                     <img className={styles.img} src={product.Image} />
                     <h2>$ {product.Price} &rarr;</h2>
                     
@@ -149,16 +147,7 @@ export default class Home extends Component {
         </main>
   
         <footer className={styles.footer}>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Powered by{' '}
-            <span className={styles.logo}>
-              <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-            </span>
-          </a>
+
         </footer>
       </div>
     )

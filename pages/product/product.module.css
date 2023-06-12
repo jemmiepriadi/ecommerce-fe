@@ -7,7 +7,8 @@
   .p {
     white-space: pre-line;
     overflow: auto;
-    max-width: 300px;
+    /* max-width: 300px; */
+    margin-bottom: 15px;
   }
   .details{
     display: flex;

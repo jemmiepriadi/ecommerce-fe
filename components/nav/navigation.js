@@ -12,6 +12,9 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { FolderCopyTwoTone } from '@mui/icons-material';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { deleteCookie, getCookie } from 'cookies-next';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Router from 'next/router';
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -22,7 +25,8 @@ export default class Navigation extends Component {
         showLoginModal: false,
         showRegisterModal:false,
         showAccountModal: false,
-        user:{}
+        user:{},
+        cart:{}
       }
   }
   closeLoginModal = () => {
@@ -32,21 +36,42 @@ export default class Navigation extends Component {
   }
   
   componentDidMount = () => {
-    if(localStorage){
-      let token = localStorage.getItem("auth_token")
+    let token = getCookie("auth_token")
       if(token && token!=""){
 
         this.setState({
           isSignedIn:true
         })
       }
+    if(localStorage){
+      
       let user = JSON.parse(localStorage.getItem("user"))
       this.setState({
         user: user
       })
-      
+
+      let cart = JSON.parse(localStorage.getItem("cart"))
+      this.setState({
+        cart: cart
+      })
+      if(cart){
+        this.setState({
+          cartCount: cart.Quantity
+        })
+      }
     }
 
+  }
+
+  logout = () => {
+    if(window.confirm("Are you sure to logout?")){
+      deleteCookie("auth_token")
+      if(localStorage){
+        localStorage.removeItem("user")
+      }
+    }
+    Router.reload()
+    return
   }
   
   render() {
@@ -65,12 +90,12 @@ export default class Navigation extends Component {
 
             <nav className={style.header__nav}>
               
-              {!this.state.isSignedIn &&<NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
+              {<NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
                 <span className={style.header__optionLineOne}><AccountCircleIcon /></span>
                 <span className={style.header__optionLineTwo}>Sign In</span>
               </NavLink>}
               
-              {this.state.isSignedIn && this.state.user.UserType == 'seller' && <NavLink href='/order-history' className={style.header__option}>
+              {this.state.isSignedIn && this.state.user.UserType == 'consumer' && <NavLink href='/order-history' className={style.header__option}>
                 <span className={style.header__optionLineOne}><HistoryIcon /></span>
                 <span className={style.header__optionLineTwo}>Order History</span>
               </NavLink>}
@@ -97,11 +122,16 @@ export default class Navigation extends Component {
               
             
               <NavLink href='/shopping-cart' className={style.header__optionBasket}>
-                <Badge badgeContent={2} color='secondary'>
+                <Badge badgeContent={this.state.cartCount} color='secondary'>
                   <ShoppingBasketIcon />
                 </Badge>
               </NavLink>
               
+              {this.state.isSignedIn && <NavLink  className={style.header__option} onClick={() => {this.logout()}}>
+                <span className={style.header__optionLineOne}><LogoutIcon /></span>
+                <span className={style.header__optionLineTwo}>Logout</span>
+              </NavLink>}
+
             </nav>
           </div>
       </div>
