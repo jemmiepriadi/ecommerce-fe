@@ -50,6 +50,10 @@ export default class index extends Component {
             [fieldName]: value,
         })
       }
+
+      componentDidMount = () => {
+        
+      }
     
   render() {
     return (

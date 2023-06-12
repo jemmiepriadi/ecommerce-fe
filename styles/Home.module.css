@@ -70,13 +70,14 @@
   /* align-items: center; */
   /* justify-content: center; */
   flex-wrap: wrap !important;
+  justify-content: center;
   max-width: 100% !important;
 }
 
 .img {
     width: 100% !important;
     height: 15vw !important;
-    object-fit: cover !important;
+    object-fit: fill !important;
 }
 
 .card {
@@ -89,6 +90,7 @@
   border-radius: 10px !important;
   transition: color 0.15s ease, border-color 0.15s ease !important;
   max-width: 300px !important; 
+  min-width: 300px;
 }
 
 .card .img{

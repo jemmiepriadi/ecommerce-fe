@@ -3,7 +3,9 @@ import { Modal } from 'react-bootstrap'
 import style from './modal.module.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Field, Form, Formik } from 'formik';
-
+import Cookies from 'js-cookie';
+import * as authApi from '../../constant/apis/auth'
+import  Router  from 'next/router';
 
 export default class LoginModal extends Component {
   render() {
@@ -26,13 +28,49 @@ export default class LoginModal extends Component {
 
 
 class Body extends Component {
+    constructor(props) {
+        super(props);
+          this.state = {
+            PhoneNumber:"",
+            Address:""
+          }
+      }
+    submit = async ({username,password}) => {
+        let data = {
+            username: username,
+            password: password  
+        }
+        try {
+            const login = await authApi.login(data)
+            const responseToken = login.data?.token
+            if (typeof localStorage !== 'undefined') {
+                console.log('we are running on the client')
+            } else {
+                console.log('we are running on the server');
+            }
+            console.log(responseToken)
+            const user = login?.data?.user;
+            if (localStorage) {
+                if(responseToken)localStorage.setItem('auth_token',responseToken);
+                if(user){
+                    localStorage.setItem('user',JSON.stringify(user))
+                    localStorage.setItem('username', user.Username)
+                }
+                // if(!localStorage.getItem("address") && (user.Address && user.Address != ""))localStorage.setItem('address', user.Address)
+                // if(!localStorage.getItem("phoneNumber")(user.PhoneNumber && user.PhoneNumber != ""))localStorage.setItem('phoneNumber', user.PhoneNumber)
+            }
+            Router.reload()
+        } catch (e) {
+             console.log(e)
+        }
+    }
   render() {
     return (
         <div className={'d-flex flex-column'} >
                 <h3 className={'align-self-center'} style={{'textAlign':'center'}}>Login</h3>
                 <div className='align-self-center' style={{width:'300px'}}>
                     <Formik
-                        initialValues={{email: '',password: ''}}
+                        initialValues={{username: '',password: ''}}
                         onSubmit={this.submit}
                         component={LoginForm}
                     />
@@ -47,9 +85,9 @@ class LoginForm extends Component {
         return(
             <Form>
                 <div className='form-group'>
-                    <label>Email</label>
+                    <label>Username</label>
                     <Field
-                        name='email'
+                        name='username'
                         type='text'
                         className='form-control'
                     />

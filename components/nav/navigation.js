@@ -21,7 +21,8 @@ export default class Navigation extends Component {
         isSignedIn: false,
         showLoginModal: false,
         showRegisterModal:false,
-        showAccountModal: false
+        showAccountModal: false,
+        user:{}
       }
   }
   closeLoginModal = () => {
@@ -29,6 +30,25 @@ export default class Navigation extends Component {
       showLoginModal: false
     })
   }
+  
+  componentDidMount = () => {
+    if(localStorage){
+      let token = localStorage.getItem("auth_token")
+      if(token && token!=""){
+
+        this.setState({
+          isSignedIn:true
+        })
+      }
+      let user = JSON.parse(localStorage.getItem("user"))
+      this.setState({
+        user: user
+      })
+      
+    }
+
+  }
+  
   render() {
     return (
       <div style={{position: 'sticky', top: '0'}}>
@@ -45,35 +65,35 @@ export default class Navigation extends Component {
 
             <nav className={style.header__nav}>
               
-              <NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
+              {!this.state.isSignedIn &&<NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
                 <span className={style.header__optionLineOne}><AccountCircleIcon /></span>
                 <span className={style.header__optionLineTwo}>Sign In</span>
-              </NavLink>
+              </NavLink>}
               
-              <NavLink href='/order-history' className={style.header__option}>
+              {this.state.isSignedIn && this.state.user.UserType == 'seller' && <NavLink href='/order-history' className={style.header__option}>
                 <span className={style.header__optionLineOne}><HistoryIcon /></span>
                 <span className={style.header__optionLineTwo}>Order History</span>
-              </NavLink>
+              </NavLink>}
 
               <NavLink href='/orders' className={style.header__option}>
                 <span className={style.header__optionLineOne}><AssignmentIcon /></span>
                 <span className={style.header__optionLineTwo}>Orders</span>
               </NavLink>
               
-              <NavLink href='/product/my-product' className={style.header__option} >
+              {this.state.isSignedIn && this.state.user.UserType == 'seller' && <NavLink href='/product/my-product' className={style.header__option} >
                 <span className={style.header__optionLineOne}><InventoryIcon /></span>
                 <span className={style.header__optionLineTwo}>My Products</span>
-              </NavLink>
+              </NavLink>}
 
-              <NavLink className={style.header__option} onClick={()=>this.props.handleChange("showRegisterModal", true)}>
+              {!this.state.isSignedIn && <NavLink className={style.header__option} onClick={()=>this.props.handleChange("showRegisterModal", true)}>
                 <span className={style.header__optionLineOne}><PersonAddIcon /></span>
                 <span className={style.header__optionLineTwo}>Sign Up</span>
-              </NavLink>
+              </NavLink>}
 
-              <NavLink  className={style.header__option} onClick={() => this.props.handleChange("showAccountModal", true)}>
+              {this.state.isSignedIn && <NavLink  className={style.header__option} onClick={() => this.props.handleChange("showAccountModal", true)}>
                 <span className={style.header__optionLineOne}><ManageAccountsIcon /></span>
                 <span className={style.header__optionLineTwo}>Account</span>
-              </NavLink>
+              </NavLink>}
               
             
               <NavLink href='/shopping-cart' className={style.header__optionBasket}>

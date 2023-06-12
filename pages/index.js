@@ -6,6 +6,9 @@ import LoginModal from '../components/auth/loginModal';
 import { Component } from 'react';
 import RegisterModal from '../components/auth/registerModal';
 import AccountModal from '../components/account';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import * as authApi from '../constant/apis/auth'
+import * as productApi from '../constant/apis/product'
 
 export default class Home extends Component {
   constructor(props) {
@@ -15,7 +18,11 @@ export default class Home extends Component {
         isSignedIn: false,
         showLoginModal: false,
         showRegisterModal:false,
-        showAccountModal: false
+        showAccountModal: false,
+        products: [],
+        page:1,
+        totalPage: 1,
+        totalRows:1
       }
   }
   closeLoginModal = () => {
@@ -41,6 +48,54 @@ export default class Home extends Component {
         [fieldName]: value,
     })
 }
+
+  componentDidMount = async () => {
+    if(localStorage){
+      let token = localStorage.getItem("auth_token")
+      if(token && token!=""){
+
+        this.setState({
+          isSignedIn:true
+        })
+      }
+    }
+    try{
+      const promise = await productApi.getAllProducts({page:this.state.page})
+      const data = promise.data.data?.data
+      this.setState({
+        products: data,
+        page: promise.data.data.page,
+        totalPage: promise.data.data.total_pages,
+        totalRows: promise.data.data.total_rows
+      })
+      console.log(data)
+    }
+    catch(e){
+
+    }
+  }
+
+  fetchData = async () =>{
+    try{
+      let page = this.state.page+1
+      if(page>this.state.totalPage)return
+      const promise = await productApi.getAllProducts({page:page})
+      this.setState({
+        page: page
+      })
+      
+      const data = promise.data.data?.data
+      
+      let products = this.state.products
+      products = products.concat(data)
+      this.setState({
+        products:products
+      })
+    }
+    catch(e){
+
+    }
+  }
   render(){
     return (
       <div className={styles.container}>
@@ -58,46 +113,39 @@ export default class Home extends Component {
           </h1>
   
           <p className={styles.description}>
-            Get started by editing{' '}
-            <code className={styles.code}>pages/index.js</code>
+            Best Products Here By Searching
+            {/* <code className={styles.code}>pages/index.js</code> */}
           </p>
   
           {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
           {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
           {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
-          <div className={styles.grid}>
-            <a href="https://nextjs.org/docs" className={styles.card}>
-              <h2>Documentation &rarr;</h2>
-              <p>Find in-depth information about Next.js features and API.</p>
-            </a>
-  
-            <a href="https://nextjs.org/learn" className={styles.card}>
-              <h2>Learn &rarr;</h2>
-              <p>Learn about Next.js in an interactive course with quizzes!</p>
-            </a>
-  
-            <a
-              href="https://github.com/vercel/next.js/tree/canary/examples"
-              className={styles.card}
-            >
-              <h2>Examples &rarr;</h2>
-              <img className={styles.img} src='https://b2912710.smushcdn.com/2912710/wp-content/uploads/2021/11/IMAG_12_cover-1024x687.jpg?lossy=1&strip=1&webp=1' />
-  
-              <p>Discover and deploy boilerplate example Next.js projects.</p>
-            </a>
-  
-            <a
-              href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              className={styles.card}
-            >
-              <h2>Deploy &rarr;</h2>
-            <img className={styles.img} src='https://www.imagdisplays.co.uk/wp-content/uploads/2021/04/PHOTO-2020-08-13-16-07-05.jpg' />
+          <div></div>
+          <InfiniteScroll 
+            dataLength={this.state.totalRows}
+            next={this.fetchData}
+            hasMore={this.state.page<this.state.totalPage}
+            loader={<p style={{textAlign:'center'}}>Loading...</p>}
+            endMessage={<p style={{textAlign:'center'}}>No more data to load.</p>}>
+              <div className={styles.grid}>
+                {this.state.products.map((product, i)=>{
+                return (
+                  <a key={product.ID}
+                    href=""
+                    className={styles.card}
+                  >
+                    {i}
+                    <img className={styles.img} src={product.Image} />
+                    <h2>$ {product.Price} &rarr;</h2>
+                    
+                    <p>
+                      {product.Name}
+                    </p>
+                  </a>)
+                })}
               
-              <p>
-                Instantly deploy your Next.js site to a public URL with Vercel.
-              </p>
-            </a>
-          </div>
+            </div>
+          </InfiniteScroll>
         </main>
   
         <footer className={styles.footer}>
