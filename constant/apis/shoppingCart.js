@@ -7,7 +7,7 @@ export async function getShoppingCart(params) {
 }
 
 export async function addShoppingCart(data, params) {
-    return axios.post(CART_URL, data, {params: params},{Headers: {"Authorization" : `${getCookie("auth_token")}`}})
+    return axios.post(CART_URL, data, { params: params, headers: {'Content-Type': 'application/json',"Authorization" : `${getCookie("auth_token")}`}})
 }
 
 export async function updateShoppingCart(data) {

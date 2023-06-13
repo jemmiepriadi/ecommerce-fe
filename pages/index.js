@@ -9,6 +9,7 @@ import AccountModal from '../components/account';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import * as authApi from '../constant/apis/auth'
 import * as productApi from '../constant/apis/product'
+import Router from 'next/router';
 
 export default class Home extends Component {
   constructor(props) {
@@ -68,7 +69,6 @@ export default class Home extends Component {
         totalPage: promise.data.data.total_pages,
         totalRows: promise.data.data.total_rows
       })
-      console.log(data)
     }
     catch(e){
 
@@ -129,8 +129,14 @@ export default class Home extends Component {
               <div className={styles.grid}>
                 {this.state.products.map((product, i)=>{
                 return (
-                  <a key={product.ID}
-                    href={"/product/" + product.ID}
+                  <div key={product.ID}
+                    // href={''}
+                    onClick={()=>{
+                      Router.push( { 
+                        pathname:'/product/'+ product.ID,
+                        query:{productID: product.ID}})
+                    }}
+                    style={{cursor:'pointer'}}
                     className={styles.card}
                   >
                     <img className={styles.img} src={product.Image} />
@@ -139,7 +145,7 @@ export default class Home extends Component {
                     <p>
                       {product.Name}
                     </p>
-                  </a>)
+                  </div>)
                 })}
               
             </div>

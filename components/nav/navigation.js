@@ -44,7 +44,6 @@ export default class Navigation extends Component {
         })
       }
     if(localStorage){
-      
       let user = JSON.parse(localStorage.getItem("user"))
       this.setState({
         user: user
@@ -95,17 +94,17 @@ export default class Navigation extends Component {
                 <span className={style.header__optionLineTwo}>Sign In</span>
               </NavLink>}
               
-              {this.state.isSignedIn && this.state.user.UserType == 'consumer' && <NavLink href='/order-history' className={style.header__option}>
+              {this.state.isSignedIn && this.state.user?.UserType == 'consumer' && <NavLink href='/order-history' className={style.header__option}>
                 <span className={style.header__optionLineOne}><HistoryIcon /></span>
                 <span className={style.header__optionLineTwo}>Order History</span>
               </NavLink>}
 
-              <NavLink href='/orders' className={style.header__option}>
+              {this.state.isSignedIn && this.state.user?.UserType == 'seller'  && <NavLink href='/orders' className={style.header__option}>
                 <span className={style.header__optionLineOne}><AssignmentIcon /></span>
                 <span className={style.header__optionLineTwo}>Orders</span>
-              </NavLink>
+              </NavLink>}
               
-              {this.state.isSignedIn && this.state.user.UserType == 'seller' && <NavLink href='/product/my-product' className={style.header__option} >
+              {this.state.isSignedIn && this.state.user?.UserType == 'seller' && <NavLink href='/product/my-product' className={style.header__option} >
                 <span className={style.header__optionLineOne}><InventoryIcon /></span>
                 <span className={style.header__optionLineTwo}>My Products</span>
               </NavLink>}

@@ -9,6 +9,9 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { Button, ButtonGroup } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AccountModal from '../../components/account';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import * as productApi from '../../constant/apis/product'
+import * as shoppingCartApi from '../../constant/apis/shoppingCart'
 
 export default class index extends Component {
   constructor(props) {
@@ -16,10 +19,12 @@ export default class index extends Component {
       this.state = {
         cartCount: 1,
         cart: {},
+        user:{},
         isSignedIn: false,
         showLoginModal: false,
         showRegisterModal:false,
-        showAccountModal: false
+        showAccountModal: false,
+        product:[]
       }
   }
   closeLoginModal = () => {
@@ -45,6 +50,37 @@ export default class index extends Component {
         [fieldName]: value,
     })
   }
+
+  componentDidMount =async () => {
+      let user
+      if(localStorage){
+         user = JSON.parse(localStorage.getItem("user"))
+        this.setState({
+          user: user,
+        })
+
+        let cart = JSON.parse(localStorage.getItem("cart"))
+        this.setState({
+          cart: cart,
+          product:cart.Product
+        })
+      }
+      try{
+        if(localStorage && !JSON.parse(localStorage.getItem("cart"))){
+          let promise = await shoppingCartApi.getShoppingCart({consumerID: user.Consumer.ID})
+          let response = promise.data.data.data[0]
+          console.log(response)
+          this.setState({
+            cart: response,
+            product:response.Product
+          })
+        }
+        
+      }catch(e){
+        console.log(e)
+      }
+    }
+  
   render() {
     return (
       <div className={styles.container}>
@@ -53,148 +89,81 @@ export default class index extends Component {
         {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <div className={style.app}>
-        <table className="table table-borderless table-shopping-cart" >
-          <thead className="text-muted">
-            <tr className="small text-uppercase">
-              <th scope="col">Product</th>
-              <th scope="col" width="120">Quantity</th>
-              <th scope="col" width="120">Price</th>
-              <th scope="col" className="text-right" width="200"> </th>
-            </tr>
-          </thead>
-          <tbody>
-          <tr style={{borderTop:'1px solid #eaeaea'}}> 
-              <td>
-                  <figure className="itemside">
-                      <div className="aside"><img src="https://b2912710.smushcdn.com/2912710/wp-content/uploads/2021/11/IMAG_12_cover-1024x687.jpg?lossy=1&strip=1&webp=1" style={{maxWidth: '100px'}} className="img-sm" /></div>
-                      <figcaption className="info">
-                          <a href="#" className="title text-dark">Some name of item goes here nice</a>
-                          <p className="text-muted small">Size: XL, Color: blue, <br /> Brand: Gucci</p>
-                      </figcaption>
-                  </figure>
-              </td>
-              <td> 
-              <ButtonGroup>
-                  <Button
-                    disabled={this.state.cartCount == 1}
-                    aria-label="increase"
-                    onClick={() => {
-                      this.setState({cartCount: this.state.cartCount - 1})
-                    }}
-                  >
-                    <RemoveIcon fontSize="small" />
-                  </Button>
-                  <input style={{width:'100%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})}/>
-                  <Button
-                    aria-label="increase"
-                    onClick={() => {
-                      this.setState({cartCount: this.state.cartCount+1})
-                    }}
-                  >
-                    <AddIcon fontSize="small" />
-                  </Button>
-                </ButtonGroup>
-              </td>
-              <td> 
-                  <div className="price-wrap"> 
-                      <var className="price">$</var> 
-                      <small className="text-muted"> $ </small> 
-                  </div> 
-              </td>
-              <td className="text-right"> 
-                <Button style={{backgroundColor:'transparent', color:'white'}} className="btn btn-light"> <DeleteIcon /></Button>
-                <figcaption className="info">
-                  <br/>
-                  <br />
-                  <Button className='btn btn-primary'>Checkout</Button>
-                </figcaption>
-              </td>
-          </tr>
-          <tr style={{borderTop:'1px solid #eaeaea'}}>
-              <td>
-                  <figure className="itemside">
-                      <div className="aside"><img src="https://www.imagdisplays.co.uk/wp-content/uploads/2021/04/PHOTO-2020-08-13-16-07-05.jpg" style={{maxWidth:"100px"}} className="img-sm" /></div>
-                      <figcaption className="info">
-                          <a href="#" className="title text-dark">Product name  goes here nice</a>
-                          <p className="text-muted small">Size: XL, Color: blue, <br /> Brand: Gucci</p>
-                      </figcaption>
-                  </figure>
-              </td>
-              <td> 
-              <ButtonGroup>
-                  <Button
-                    aria-label="increase"
-                    onClick={() => {
-                      this.setState({cartCount: this.state.cartCount - 1})
-                    }}
-                  >
-                    <RemoveIcon fontSize="small" />
-                  </Button>
-                  <input style={{width:'100%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})}/>
-                  <Button
-                    aria-label="increase"
-                    onClick={() => {
-                      this.setState({cartCount: this.state.cartCount+1})
-                    }}
-                  >
-                    <AddIcon fontSize="small" />
-                  </Button>
-                </ButtonGroup>
-              </td>
-              <td> 
-                  <div className="price-wrap"> 
-                      <var className="price">$</var> 
-                      <small  className="text-muted"> $ each </small>  
-                  </div> 
-              </td>
-              <td className="text-right"> 
-              <a href="" className="btn btn-light btn-round"> Remove</a>
-              </td>
-          </tr>
-          <tr>
-              <td>
-                  <figure className="itemside">
-                      <div className="aside"><img src="assets/images/items/3.jpg" className="img-sm" /></div>
-                      <figcaption className="info">
-                          <a href="#" className="title text-dark">Another name of some product goes just here</a>
-                          <p className="small text-muted">Size: XL, Color: blue,  Brand: Tissot</p>
-                      </figcaption>
-                  </figure>
-              </td>
-              <td> 
-                {/* //total */}
-                <ButtonGroup>
-                  <Button
-                    aria-label="increase"
-                    onClick={() => {
-                      this.setState({cartCount: this.state.cartCount - 1})
-                    }}
-                  >
-                    <RemoveIcon fontSize="small" />
-                  </Button>
-                  <input style={{width:'100%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})}/>
-                  <Button
-                    aria-label="increase"
-                    onClick={() => {
-                      this.setState({cartCount: this.state.cartCount+1})
-                    }}
-                  >
-                    <AddIcon fontSize="small" />
-                  </Button>
-                </ButtonGroup>
-              </td>
-              <td> 
-                  <div className="price-wrap"> 
-                      <var className="price">$</var> 
-                      <small className="text-muted"> $ each</small> 
-                  </div> 
-              </td>
-              <td className="text-right"> 
-                  <a href="" className="btn btn-light btn-round"> Remove</a>
-              </td>
-          </tr>
-          </tbody>
-        </table>
+          <Button onClick={()=>{console.log(this.state.product)}} style={{backgroundColor:'transparent', color:'white', marginBottom: '15px'}} className="btn btn-light"> <ShoppingCartCheckoutIcon /> Checkout</Button>
+            <div className={style.box}>
+            <table className="table table-borderless table-shopping-cart" >
+              <thead className="text-muted">
+                <tr className="small text-uppercase">
+                  <th scope="col">Product</th>
+                  <th scope="col" width="120">Quantity</th>
+                  <th scope="col" width="120">Price</th>
+                  <th scope="col" className="text-right" width="200"> </th>
+                </tr>
+              </thead>
+              <tbody>
+              {this.state.product.map(product =>{
+                  return (
+                    <tr style={{borderTop:'1px solid #eaeaea'}}> 
+                        <td>
+                            <figure className="itemside">
+                                <div className="aside"><img src={product.Image} style={{maxWidth: '100px'}} className="img-sm" /></div>
+                                <figcaption className="info">
+                                    <a href="#" className="title text-light">{product.Name}</a>
+                                    <p className="text-muted small">Quantity: {product.Quantity}, Color: blue, <br /> Brand: Gucci</p>
+                                </figcaption>
+                            </figure>
+                        </td>
+                        <td> 
+                        <ButtonGroup>
+                            <Button
+                              disabled={product.Quantity == 1}
+                              aria-label="increase"
+                              onClick={() => {
+                                this.setState({cartCount: this.state.cartCount - 1})
+                                product.Quantity-=1
+                                console.log(this.state.product)
+                              }}
+                            >
+                              <RemoveIcon fontSize="small" />
+                            </Button>
+                            <input style={{width:'100%', textAlign:'center'}} value={product.Quantity} type="text" class="form-control" onChange={event =>
+                               {this.setState({cartCount: event.target.value.replace(/\D/,'')})
+                               product.Quantity =  event.target.value.replace(/\D/,'')
+                              }
+                               }/>
+                            <Button
+                              aria-label="increase"
+                              onClick={() => {
+                                
+                                this.setState({cartCount: this.state.cartCount+1})
+                                product.Quantity+=1
+                                console.log(this.state.product)
+                              }}
+                            >
+                              <AddIcon fontSize="small" />
+                            </Button>
+                          </ButtonGroup>
+                        </td>
+                        <td> 
+                            <div className="price-wrap"> 
+                                <var className="price">$</var> 
+                                <small className="text-muted"> $ </small> 
+                            </div> 
+                        </td>
+                        <td className="text-right"> 
+                          <Button style={{backgroundColor:'transparent', color:'white'}} className="btn btn-light"> <DeleteIcon /></Button>
+                          <figcaption className="info">
+                          </figcaption>
+                        </td>
+                    </tr>
+                  )
+               })
+              }
+              
+              </tbody>
+            </table>
+            </div>
+        
         </div>
       </div>
     )

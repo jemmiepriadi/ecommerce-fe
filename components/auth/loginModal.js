@@ -44,11 +44,6 @@ class Body extends Component {
         try {
             const login = await authApi.login(data)
             const responseToken = login.data?.token
-            if (typeof localStorage !== 'undefined') {
-                console.log('we are running on the client')
-            } else {
-                console.log('we are running on the server');
-            }
             const user = login?.data?.user;
             if(responseToken)setCookie('auth_token',responseToken);
             if (localStorage) {
@@ -59,7 +54,7 @@ class Body extends Component {
                 if(!localStorage.getItem("address") && (user.Address && user.Address != ""))localStorage.setItem('address', user.Address)
                 if(!localStorage.getItem("phoneNumber") && (user.PhoneNumber && user.PhoneNumber != ""))localStorage.setItem('phoneNumber', user.PhoneNumber)
             }
-            // Router.reload()
+            Router.reload()
         } catch (e) {
              console.log(e)
         }

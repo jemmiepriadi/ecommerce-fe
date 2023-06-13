@@ -9,5 +9,6 @@ export const PRODUCT_URL = API_V1 + "products"
 
 export const ORDER_URL = API_V1 + "api/orders"
 
-export const CART_URL = API_V1 + "orders"
+export const CART_URL = API_V1 + "shoppingcart"
+export const CART = (data) => CART_URL + "?consumerID=" +data
 export const UPDATE_CART = CART_URL+"/update"

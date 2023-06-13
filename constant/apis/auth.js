@@ -4,7 +4,7 @@ import { LOGIN_URL, ME_URL } from '../api'
 
 
 export function login(data){
-    return Axios.post(LOGIN_URL, data, {headers: {"Authorization" : `${localStorage.getItem("auth_token")}`}})
+    return Axios.post(LOGIN_URL, data)
 }
 
 export function me(){

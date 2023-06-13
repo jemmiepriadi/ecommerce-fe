@@ -51,8 +51,10 @@ export default class ProductDetail extends Component {
 
   componentDidMount =async () => {
     const productId = Router.query.productId
+    console.log(productId)
+    console.log(Router.query)
     if(localStorage){
-      let user = localStorage.getItem("user")
+      let user = JSON.parse(localStorage.getItem("user"))
       this.setState({
         user: user,
       })
@@ -69,22 +71,52 @@ export default class ProductDetail extends Component {
   }
   onSubmit = async() =>{
     try{
+      let product = this.state.product
+      product.Quantity = this.state.cartCount
+
+      let cartData
+      let totalCart = 0;
+      if(localStorage && JSON.parse(localStorage.getItem("cart"))){
+        cartData = JSON.parse(localStorage.getItem("cart"))
+        if(cartData){
+          // for(let i = 0; i<cartData.Product;i++){
+          //   if(cartData[i].ID==product.ID){
+              
+          //   }
+          // }
+          let index = cartData.Product.findIndex(element=> element.ID == product.ID)
+          if(index>-1){
+            cartData.Product[index].Quantity += this.state.cartCount 
+          }else{
+            cartData.Product.push(product)
+          }
+        }
+        // if(!cartData.Quantity)totalCart = this.state.cartCount
+        for(let i = 0; i<cartData.Product.length; i++){
+
+          totalCart+=cartData.Product[i].Quantity
+        }
+      }else{
+        totalCart = this.state.cartCount
+      }
       let cart = {
-        ID: 1,
-        Quantity: 1,
-        ConsumerID: this.state.user ? this.state.user.Consumer.ID : null ,
-        Quantity: this.state.cartCount,
-        Product:this.state.product
+        consumerID: this.state.user ? this.state.user.Consumer.ID : null ,
+        Quantity: totalCart,
+        Product:[this.state.product]
       }
       if(localStorage){
-        localStorage.setItem("cart", cart)
+        localStorage.setItem("cart", JSON.stringify(cartData))
       }
       if(this.state?.user && this.state?.user?.Consumer?.ID){
-        let promise = await shoppingCartApi.addShoppingCart(cart,{consumerID: this.state.user.consumer.ID})
+        await shoppingCartApi.addShoppingCart(cart, {consumerID: this.state?.user?.Consumer?.ID}).then(
+          Router.push('/shopping-cart')
+
+        )
         let response = promise?.data
       }
-    }catch(e){
 
+    }catch(e){
+      console.log(e)
     }
   }
   render() {
@@ -129,7 +161,7 @@ export default class ProductDetail extends Component {
                 </ButtonGroup>
                 <div>
                   {this.state.cartCount == 0 && <p style={{color: 'red'}}>Minimum Item is 1!</p>}
-                  {(!this.state?.user || this.state.user.UserType == "consumer") && <Button disabled={this.state.cartCount == 0} className={productStyle.cart} onClick={()=>{this.onSubmit}}>Add to cart</Button>}
+                  {(!this.state?.user || this.state.user.UserType == "consumer") && <Button disabled={this.state.cartCount == 0} className={productStyle.cart} onClick={()=>{this.onSubmit()}}>Add to cart</Button>}
                 </div>
               </div>
               
