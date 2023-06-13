@@ -135,7 +135,7 @@ class ProductDetailBody extends Component {
       <div className={styles.container}>
         {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
         {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
-        {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
+        {this.state.showAccountModal &&  <AccountModal user={this.state.user}  show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <div>
           <div className={productStyle.app}>

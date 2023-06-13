@@ -4,20 +4,29 @@ import Navigation from '../../components/nav/navigation';
 import AccountModal from '../../components/account';
 import RegisterModal from '../../components/auth/registerModal';
 import LoginModal from '../../components/auth/loginModal';
+import * as shoppingCartApi from '../../constant/apis/shoppingCart'
+import Select from 'react-select';
 
 export default class index extends Component {
     constructor(props) {
         super(props);
           this.state = {
             cartCount: 1,
-            cart: [{}],
+            cart: {},
             isSignedIn: false,
             showLoginModal: false,
             showRegisterModal:false,
             showAccountModal: false,
+            name:'',
+            phoneNumber:'',
+            email:'',
+            address:'',
+            city:'',
+            state:'',
+            zipcode:'',
+            totalPrice:0,
             checkoutInput: {
-                firstname: '',
-                lastname: '',
+                name: '',
                 phone: '',
                 email: '',
                 address: '',
@@ -25,6 +34,9 @@ export default class index extends Component {
                 state: '',
                 zipcode: '',
             },
+            user: {},
+            product:[],
+            payment: ''
           }
       }
       closeLoginModal = () => {
@@ -51,90 +63,146 @@ export default class index extends Component {
         })
       }
 
-      componentDidMount = () => {
-        
+      componentDidMount = async () => {
+        let user
+      if(localStorage){
+         user = JSON.parse(localStorage.getItem("user"))
+        this.setState({
+          user: user,
+        })
+
+        if(user){
+            this.setState({
+                name:user.Name,
+                phoneNumber:user.PhoneNumber,
+                email:user.Email,
+                address:user.Address,
+            })
+        }
+
+        let cart = JSON.parse(localStorage.getItem("cart"))
+        let totalPrice = 0
+        if(cart){
+            cart.Product?.forEach(element => {
+                let price = element.Price * element.Quantity
+                totalPrice +=price
+                console.log(totalPrice)
+            });
+          this.setState({
+            cart: cart,
+            product:cart.Product,
+            totalPrice: totalPrice
+          })
+        }
       }
+
+      try{
+        if(localStorage && !JSON.parse(localStorage.getItem("cart"))){
+          let promise = await shoppingCartApi.getShoppingCart({consumerID: user.Consumer.ID})
+          let response = promise.data.data.data[0]
+          let product = response.Product
+          let totalPrice
+          product?.forEach(element => {
+            let price = element.Price * element.Quantity
+            totalPrice+=price
+        });
+          this.setState({
+            cart: response,
+            product:product,
+            totalPrice: totalPrice
+          })
+        }
+        
+      }catch(e){
+        console.log(e)
+      }
+      }
+
+      handleOptionChange = (data) => {
+        this.setState({
+            payment: data
+        })
+      }
+      
     
   render() {
+    const options = [
+        { value: 'debit', label: 'Debit Card' },
+        { value: 'credit', label: 'Credit Card' },
+        { value: 'gopay', label: 'Gopay' }
+    ]
     return (
         <div className={styles.container}>
             {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
         {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
-        {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
+        {this.state.showAccountModal &&  <AccountModal user={this.state.user} show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <br />
         <div className="row">
 
         <div className="col-md-7">
-            <div className="card">
+            <div className="card text-dark">
                 <div className="card-header">
                     <h4>Basic Information</h4>
                 </div>
                 <div className="card-body">
 
                     <div className="row">
-                        <div className="col-md-6">
+                        <div className="col-md-12">
                             <div className="form-group mb-3">
-                                <label> First Name</label>
-                                <input type="text" name="firstname" onChange={() => {}} value={this.state.checkoutInput?.firstname} className="form-control" />
-                                <small className="text-danger">{'error.firstname'}</small>
-                            </div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="form-group mb-3">
-                                <label> Last Name</label>
-                                <input type="text" name="lastname" onChange={() => {}} value={this.state.checkoutInput?.lastname} className="form-control" />
-                                <small className="text-danger">{"error.lastname"}</small>
+                                <label> Name</label>
+                                <input type="text" name="name" onChange={(e) => {(e)=>this.handleChange("name", e.target.value)}} value={this.state.name} className="form-control" />
+                                {/* <small className="text-danger">{"error.lastname"}</small> */}
                             </div>
                         </div>
                         <div className="col-md-6">
                             <div className="form-group mb-3">   
                                 <label> Phone Number</label>
-                                <input type="number" name="phone" onChange={() => {}} value={this.state.checkoutInput?.phone} className="form-control" />
-                                <small className="text-danger">{'error.phone'}</small>
+                                <input type="number" name="phone" onChange={() => {this.handleChange("phoneNumber", e.target.value)}} value={this.state.phoneNumber} className="form-control" />
                             </div>
                         </div>
                         <div className="col-md-6">
                             <div className="form-group mb-3">
                                 <label> Email Address</label>
-                                <input type="email" name="email" onChange={() => {}} value={this.statecheckoutInput?.email} className="form-control" />
-                                <small className="text-danger">{'error.email'}</small>
+                                <input type="email" name="email" onChange={() => {this.handleChange("email", e.target.value)}} value={this.state.email} className="form-control" />
                             </div>
                         </div>
                         <div className="col-md-12">
                             <div className="form-group mb-3">
                                 <label> Full Address</label>
-                                <textarea rows="3" name="address" onChange={() => {}} value={this.state.checkoutInput?.address} className="form-control"></textarea>
-                                <small className="text-danger">{'error.address'}</small>
+                                <textarea rows="3" name="address" onChange={() => {this.handleChange("address", e.target.value)}} value={this.state.address} className="form-control"></textarea>
                             </div>
                         </div>
                         <div className="col-md-4">
                             <div className="form-group mb-3">
                                 <label>City</label>
-                                <input type="text" name="city" onChange={() => {}} value={this.state.checkoutInpu?.city} className="form-control" />
-                                <small className="text-danger">{'error.city'}</small>
+                                <input type="text" name="city" onChange={() => {this.handleChange("city", e.target.value)}} value={this.state.city} className="form-control" />
                             </div>
                         </div>
                         <div className="col-md-4">
                             <div className="form-group mb-3">
                                 <label>State</label>
-                                <input type="text" name="state" onChange={() => {}} value={this.state.checkoutInput?.state} className="form-control" />
-                                <small className="text-danger">{'error.state'}</small>
+                                <input type="text" name="state" onChange={() => {this.handleChange("state", e.target.value)}} value={this.state.state} className="form-control" />
                             </div>
                         </div>
                         <div className="col-md-4">
                             <div className="form-group mb-3">
                                 <label>Zip Code</label>
-                                <input type="text" name="zipcode" onChange={() => {}} value={this.state.checkoutInput?.zipcode} className="form-control" />
-                                <small className="text-danger">{'error.zipcode'}</small>
+                                <input type="text" name="zipcode" onChange={() => {this.handleChange("zipcode", e.target.value)}} value={this.state.zipcode} className="form-control" />
+                            </div>
+                        </div>
+                        <div className="col-md-12">
+                            <div className="form-group mb-3">
+                                <label>Paymant</label>
+                                <Select
+                                    options={options}
+                                    onChange={(e)=>this.handleOptionChange(e)}
+                                />
                             </div>
                         </div>
                         <div className="col-md-12">
                             <div className="form-group text-end">
                                 <button type="button" className="btn btn-primary mx-1" onClick={ (e) => submitOrder(e, 'cod') }>Place Order</button>
-                                <button type="button" className="btn btn-primary mx-1" onClick={ (e) => submitOrder(e, 'razorpay') }>Pay by Razorpay</button>
-                                <button type="button" className="btn btn-warning mx-1" onClick={ (e) => submitOrder(e, 'payonline') }>Pay Online</button>
-
                             </div>
                         </div>
                     </div>
@@ -154,20 +222,19 @@ export default class index extends Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {/* {cart.map( (item, idx) => { */}
-                        {/* // totalCartPrice += item.product.selling_price * item.product_qty; */}
-                        {/* return ( */}
-                            <tr key={'idx'}>
-                                <td>{'item.product.name'}</td>
-                                <td>{'item.product.selling_price'}</td>
-                                <td>{'0qty'}</td>
-                                <td>{'Rp 1000000'}</td>
+                    {this.state.product.map(product=>{
+                        return(
+                            <tr key={product.ID}>
+                                <td>{product.Name}</td>
+                                <td>{product.Price}</td>
+                                <td>{product.Quantity}</td>
+                                <td>{product.Price * product.Quantity}</td>
                             </tr>
-                        {/* ) */}
-                    {/* })} */}
+                        )
+                    })}
                     <tr>
                         <td colSpan="2" className="text-end fw-bold">Grand Total</td>
-                        <td colSpan="2" className="text-end fw-bold">{'totalCartPrice'}</td>
+                        <td colSpan="2" className="text-end fw-bold">$ {this.state.totalPrice}</td>
                     </tr>
                 </tbody>
             </table>

@@ -134,7 +134,7 @@ export default class MyProduct extends Component {
         <div className={styles.container}>
         {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
         {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
-        {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
+        {this.state.showAccountModal &&  <AccountModal user={this.state.user} show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
         {this.state.showProductModal &&  <ProductModal user={this.state.user} product={this.state.currentProduct} show={this.state.showProductModal} closeProductModal={this.closeProductModal}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <div className={style.app}>

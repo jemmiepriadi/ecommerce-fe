@@ -129,19 +129,24 @@ export default class index extends Component {
       }
     }
 
-    checkout = async() => {
-      
-    }
+    // checkout = async() => {
+    //   let cartData = this.state.cart
+    //   try{
+
+    //   }catch(e){
+
+    //   }
+    // }
   
   render() {
     return (
       <div className={styles.container}>
         {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
         {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
-        {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
+        {this.state.showAccountModal &&  <AccountModal user={this.state.user} show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <div className={style.app}>
-          <Button onClick={()=>{console.log(this.state.product)}} style={{backgroundColor:'transparent', color:'white', marginBottom: '15px'}} className="btn btn-light"> <ShoppingCartCheckoutIcon /> Checkout</Button>
+          <Button onClick={()=>{Router.push('/checkout')}} style={{backgroundColor:'transparent', color:'white', marginBottom: '15px'}} className="btn btn-light"> <ShoppingCartCheckoutIcon /> Checkout</Button>
             <div className={style.box}>
             <table className="table table-borderless table-shopping-cart" >
               <thead className="text-muted">
