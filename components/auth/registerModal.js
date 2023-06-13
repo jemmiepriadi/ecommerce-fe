@@ -3,6 +3,8 @@ import { Modal } from 'react-bootstrap'
 import style from './modal.module.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Field, Form, Formik } from 'formik';
+import * as authApi from '../../constant/apis/auth'
+import Router from 'next/router';
 
 
 export default class RegisterModal extends Component {
@@ -26,13 +28,31 @@ export default class RegisterModal extends Component {
 
 
 class Body extends Component {
+    
+    submit =  async({username, name, address, phoneNumber,userType,password}) => {
+        let data = {
+            username: username, 
+            name: name, 
+            address: address, 
+            phoneNumber: phoneNumber,
+            password: password,
+            userType: userType
+        }
+        try{
+            const register = await authApi.register(data)
+            const  response= register.data
+            Router.reload()
+        }catch(e){
+            console.error(e)
+        }
+    }
   render() {
     return (
         <div className={'d-flex flex-column'} >
                 <h3 className={'align-self-center'} style={{'textAlign':'center'}}>Register</h3>
                 <div className='align-self-center' style={{width:'300px'}}>
                     <Formik
-                        initialValues={{email: '',password: ''}}
+                        initialValues={{username: '', name: '', address: '', phoneNumber: '', userType: 'consumer',password: ''}}
                         onSubmit={this.submit}
                         component={RegisterForm}
                     />
@@ -43,13 +63,38 @@ class Body extends Component {
 }
 
 class RegisterForm extends Component {
+    
     render(){
         return(
             <Form>
                 <div className='form-group'>
-                    <label>Email</label>
+                    <label>Username(must be unique)</label>
                     <Field
-                        name='email'
+                        name='username'
+                        type='text'
+                        className='form-control'
+                    />
+                </div>
+                <div className='form-group'>
+                    <label>Name</label>
+                    <Field
+                        name='name'
+                        type='text'
+                        className='form-control'
+                    />
+                </div>
+                <div className='form-group'>
+                    <label>Address</label>
+                    <Field
+                        name='address'
+                        type='text'
+                        className='form-control'
+                    />
+                </div>
+                <div className='form-group'>
+                    <label>Phone Number</label>
+                    <Field
+                        name='phoneNumber'
                         type='text'
                         className='form-control'
                     />
@@ -69,13 +114,13 @@ class RegisterForm extends Component {
                     <label>User type</label>
                     <div>
                     <Field
-                        name='type'
+                        name='userType'
                         as='select'
                         className='form-control'
                         style={{paddingRight:'2em'}}
                     >
-                        <option value={'pembeli'}>Pembeli</option>
-                        <option value={'penjual'}>Penjual</option>
+                        <option value={'consumer'}>Pembeli</option>
+                        <option value={'seller'}>Penjual</option>
                     </Field>
                     </div>
                 </div>

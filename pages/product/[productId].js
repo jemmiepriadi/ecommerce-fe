@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import Navigation from '../../components/nav/navigation'
 import styles from '../../styles/Home.module.css'
 import productStyle from './product.module.css'
@@ -8,11 +8,24 @@ import { Button, ButtonGroup } from '@mui/material';
 import LoginModal from '../../components/auth/loginModal';
 import RegisterModal from '../../components/auth/registerModal';
 import AccountModal from '../../components/account';
-import Router  from 'next/router';
+import Router, { useRouter }  from 'next/router';
 import * as productApi from '../../constant/apis/product'
 import * as shoppingCartApi from '../../constant/apis/shoppingCart'
 
-export default class ProductDetail extends Component {
+export default function ProductDetail(){
+  const router = useRouter();
+  const [productId, setProductId] = useState()
+  
+  useEffect(()=>{
+  },[router.isReady])
+  return(
+    <div>
+    {router.isReady &&<ProductDetailBody productId={router.query.productId}/>}
+    </div>
+  )
+}
+
+class ProductDetailBody extends Component {
   constructor(props) {
     super(props);
       this.state = {
@@ -50,9 +63,7 @@ export default class ProductDetail extends Component {
   }
 
   componentDidMount =async () => {
-    const productId = Router.query.productId
-    console.log(productId)
-    console.log(Router.query)
+      const productId = this.props.productId
     if(localStorage){
       let user = JSON.parse(localStorage.getItem("user"))
       this.setState({
@@ -108,7 +119,7 @@ export default class ProductDetail extends Component {
         localStorage.setItem("cart", JSON.stringify(cartData))
       }
       if(this.state?.user && this.state?.user?.Consumer?.ID){
-        await shoppingCartApi.addShoppingCart(cart, {consumerID: this.state?.user?.Consumer?.ID}).then(
+        await shoppingCartApi.addShoppingCart(cartData, {consumerID: this.state?.user?.Consumer?.ID}).then(
           Router.push('/shopping-cart')
 
         )

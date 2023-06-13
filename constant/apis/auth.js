@@ -1,10 +1,14 @@
 
 import Axios from 'axios'
-import { LOGIN_URL, ME_URL } from '../api'
+import { LOGIN_URL, ME_URL, REGISTER_URL } from '../api'
 
 
 export function login(data){
     return Axios.post(LOGIN_URL, data)
+}
+
+export function register(data){
+    return Axios.post(REGISTER_URL, data)
 }
 
 export function me(){

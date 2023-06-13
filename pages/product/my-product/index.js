@@ -10,18 +10,26 @@ import EditIcon from '@mui/icons-material/Edit';
 import AccountModal from '../../../components/account';
 import ProductModal from '../../../components/product/productModal';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import * as productApi from '../../../constant/apis/product'
+import Router from 'next/router';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 export default class MyProduct extends Component {
     constructor(props) {
         super(props);
           this.state = {
             cartCount: 1,
-            cart: {},
+            product:[],
             isSignedIn: false,
             showLoginModal: false,
             showProductModal: false,
             showRegisterModal:false,
             showAccountModal: false,
+            page:1,
+            user:{},
+            totalPage: 1,
+            totalRows:1,
+            currentProduct:{}
           }
       }
       closeLoginModal = () => {
@@ -53,134 +61,148 @@ export default class MyProduct extends Component {
             [fieldName]: value,
         })
       }
+
+      componentDidMount = async () =>{
+        let sellerID
+        if(localStorage){
+          let user = JSON.parse(localStorage.getItem("user"))
+          this.setState({
+            user: user,
+          })
+          if(user?.UserType != "seller")Router.push('/')
+          sellerID = user?.Seller.ID
+        }
+        try{
+          let promise = await productApi .getAllProducts({sellerID: sellerID})
+          let response = promise.data.data.data
+          this.setState({
+            product: response,
+            page: promise.data.data.page,
+            totalPage: promise.data.data.total_pages,
+            totalRows: promise.data.data.total_rows
+          })
+        }catch(e){
+    
+        }
+      }
+
+      fetchData = async () =>{
+        try{
+          let page = this.state.page+1
+          if(page>this.state.totalPage)return
+          const promise = await productApi.getAllProducts({
+            sellerID: this.state.user.Seller.ID,
+            page:page
+          })
+          this.setState({
+            page: page
+          })
+          
+          const data = promise.data.data?.data
+          
+          let products = this.state.product
+          products = products.concat(data)
+          this.setState({
+            product:products
+          })
+        }
+        catch(e){
+    
+        }
+      }
+
+      sendProduct = (product) => {
+        this.setState({
+          currentProduct: product
+        })
+      }
+
+      deleteProduct = async(product) =>{
+        if(window && window.confirm("Are you sure you would like to delete this product?")){
+          try{
+            let promise = await productApi.deleteProduct({id: product.ID})
+            let response = promise.data
+            Router.reload()
+          }catch(e){
+            console.log(e)
+          }
+        }
+      }
+
   render() {
     return (
         <div className={styles.container}>
         {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
         {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
         {this.state.showAccountModal &&  <AccountModal show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
-        {this.state.showProductModal &&  <ProductModal show={this.state.showProductModal} closeProductModal={this.closeProductModal}/>}
+        {this.state.showProductModal &&  <ProductModal user={this.state.user} product={this.state.currentProduct} show={this.state.showProductModal} closeProductModal={this.closeProductModal}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <div className={style.app}>
-        <Button style={{backgroundColor:'transparent', color:'white', marginBottom: '15px'}} className="btn btn-light"> <AddCircleIcon /> Add new item</Button>
+        <Button style={{backgroundColor:'transparent', color:'white', marginBottom: '15px'}} onClick={()=>{
+          this.setState({
+            showProductModal: true
+          })
+        }} className="btn btn-light"> <AddCircleIcon /> Add new item</Button>
           <div className={style.box}>
-            <table className="table table-borderless table-shopping-cart" >
-              <thead className="text-muted">
-                <tr className="small text-uppercase">
-                  <th scope="col">Product</th>
-                  <th scope="col" width="250">Description</th>
-                  <th scope="col" width="120">Price</th>
-                  <th scope="col" className="text-right" width="200"> </th>
+            <InfiniteScroll
+                    dataLength={this.state.totalRows}
+                    next={this.fetchData}
+                    hasMore={this.state.page<this.state.totalPage}
+                    loader={<p style={{textAlign:'center'}}>Loading...</p>}
+                    endMessage={<p style={{textAlign:'center'}}>No more data to load.</p>}
+                    >
+              <table className="table table-borderless table-shopping-cart" >
+                <thead className="text-muted">
+                  <tr className="small text-uppercase">
+                    <th scope="col">Product</th>
+                    <th scope="col" width="250">Description</th>
+                    <th scope="col" width="120">Price</th>
+                    <th scope="col" className="text-right" width="200"> </th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                
+                {this.state.product?.map(product=>{
+                  return(
                   
-                </tr>
-              </thead>
-              <tbody>
-              <tr style={{borderTop:'1px solid #eaeaea'}}> 
-                  <td>
-                      <figure className="itemside">
-                          <div className="aside"><img src="https://b2912710.smushcdn.com/2912710/wp-content/uploads/2021/11/IMAG_12_cover-1024x687.jpg?lossy=1&strip=1&webp=1" style={{maxWidth: '100px'}} className="img-sm" /></div>
-                          <figcaption className="info">
-                              <p href="#"  style={{color: 'white'}} className="title ">Some name of item goes here nice</p>
-                              <p className="text-muted small">Size: XL, Color: blue, <br /> Brand: Gucci</p>
-                          </figcaption>
-                      </figure>
-                  </td>
-                  <td> 
-                    <p  style={{color: 'white'}}>this is a descripiton</p>
-                  </td>
-                  <td> 
-                      <div className="price-wrap"> 
-                          <p style={{color: 'white'}} className="price">$</p> 
-                      </div> 
-                  </td>
-                  <td className="text-right"> 
-                    <Button style={{backgroundColor:'transparent', color:'white'}} onClick={()=>{this.handleChange("showProductModal", true)}} className="btn btn-light"> <EditIcon /></Button>
-                  </td>
-                  <td style={{color: 'white'}}>
-                    <Button style={{backgroundColor:'transparent', color:'white'}} className="btn btn-light"> <DeleteIcon /></Button>
-                  </td>
-              </tr>
-              <tr style={{borderTop:'1px solid #eaeaea'}}>
-                  <td>
-                      <figure className="itemside">
-                          <div className="aside"><img src="https://www.imagdisplays.co.uk/wp-content/uploads/2021/04/PHOTO-2020-08-13-16-07-05.jpg" style={{maxWidth:"100px"}} className="img-sm" /></div>
-                          <figcaption className="info">
-                              <a href="#" className="title text-dark">Product name  goes here nice</a>
-                              <p className="text-muted small">Size: XL, Color: blue, <br /> Brand: Gucci</p>
-                          </figcaption>
-                      </figure>
-                  </td>
-                  <td> 
-                  <ButtonGroup>
-                      <Button
-                        aria-label="increase"
-                        onClick={() => {
-                          this.setState({cartCount: this.state.cartCount - 1})
-                        }}
-                      >
-                      </Button>
-                      <input style={{width:'100%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})}/>
-                      <Button
-                        aria-label="increase"
-                        onClick={() => {
-                          this.setState({cartCount: this.state.cartCount+1})
-                        }}
-                      >
-                      </Button>
-                    </ButtonGroup>
-                  </td>
-                  <td> 
-                      <div className="price-wrap"> 
-                          <var className="price">$</var> 
-                          <small  className="text-muted"> $ each </small>  
-                      </div> 
-                  </td>
-                  <td className="text-right"> 
-                  <a href="" className="btn btn-light btn-round"> Remove</a>
-                  </td>
-              </tr>
-              <tr>
-                  <td>
-                      <figure className="itemside">
-                          <div className="aside"><img src="https://ecommerce-jemmi.s3.ap-southeast-2.amazonaws.com/Screenshot%202023-06-10%20at%2008.22.15.png" style={{maxWidth:"100px"}} className="img-sm" /></div>
-                          <figcaption className="info">
-                              <a href="#" className="title text-dark">Another name of some product goes just here</a>
-                              <p className="small text-muted">Size: XL, Color: blue,  Brand: Tissot</p>
-                          </figcaption>
-                      </figure>
-                  </td>
-                  <td> 
-                    {/* //total */}
-                    <ButtonGroup>
-                      <Button
-                        aria-label="increase"
-                        onClick={() => {
-                          this.setState({cartCount: this.state.cartCount - 1})
-                        }}
-                      >
-                      </Button>
-                      <input style={{width:'100%', textAlign:'center'}} value={this.state.cartCount} type="text" class="form-control" onChange={event => this.setState({cartCount: event.target.value.replace(/\D/,'')})}/>
-                      <Button
-                        aria-label="increase"
-                        onClick={() => {
-                          this.setState({cartCount: this.state.cartCount+1})
-                        }}
-                      >
-                      </Button>
-                    </ButtonGroup>
-                  </td>
-                  <td> 
-                      <div className="price-wrap"> 
-                          <var className="price">$</var> 
-                          <small className="text-muted"> $ each</small> 
-                      </div> 
-                  </td>
-                  <td className="text-right"> 
-                      <a href="" className="btn btn-light btn-round"> Remove</a>
-                  </td>
-              </tr>
-              </tbody>
-            </table>
+                      <tr style={{borderTop:'1px solid #eaeaea'}} > 
+                        <td>
+                            <figure className="itemside">
+                                <div className="aside"><img src={product.Image} style={{maxWidth: '100px'}} className="img-sm" /></div>
+                                <figcaption className="info">
+                                    <p href="#"  style={{color: 'white'}} className="title ">{product.Name}</p>
+                                </figcaption>
+                            </figure>
+                        </td>
+                        <td> 
+                          <p  style={{color: 'white'}}>{product.Description}</p>
+                        </td>
+                        <td> 
+                            <div className="price-wrap"> 
+                                <p style={{color: 'white'}} className="price">${product.Price}</p> 
+                            </div> 
+                        </td>
+                        <td className="text-right"> 
+                          <Button style={{backgroundColor:'transparent', color:'white'}} onClick={()=>{
+                            this.sendProduct(product)
+                            this.setState({
+                              showProductModal: true
+                            })
+                            }} className="btn btn-light"> <EditIcon /></Button>
+                        </td>
+                        <td style={{color: 'white'}}>
+                          <Button style={{backgroundColor:'transparent', color:'white'}} onClick={()=>this.deleteProduct(product)} className="btn btn-light"> <DeleteIcon /></Button>
+                        </td>
+                      </tr>
+                    
+                  )
+                })}
+
+                </tbody>
+              </table>
+            </InfiniteScroll>
+
           </div>
         
         </div>

@@ -12,6 +12,7 @@ import AccountModal from '../../components/account';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import * as productApi from '../../constant/apis/product'
 import * as shoppingCartApi from '../../constant/apis/shoppingCart'
+import Router from 'next/router';
 
 export default class index extends Component {
   constructor(props) {
@@ -59,17 +60,24 @@ export default class index extends Component {
           user: user,
         })
 
+        if(user){
+          if(user.UserType == "seller"){
+            Router.push('/')
+          }
+        }
+
         let cart = JSON.parse(localStorage.getItem("cart"))
-        this.setState({
-          cart: cart,
-          product:cart.Product
-        })
+        if(cart){
+          this.setState({
+            cart: cart,
+            product:cart.Product
+          })
+        }
       }
       try{
         if(localStorage && !JSON.parse(localStorage.getItem("cart"))){
           let promise = await shoppingCartApi.getShoppingCart({consumerID: user.Consumer.ID})
           let response = promise.data.data.data[0]
-          console.log(response)
           this.setState({
             cart: response,
             product:response.Product
@@ -79,6 +87,50 @@ export default class index extends Component {
       }catch(e){
         console.log(e)
       }
+    }
+
+    updateCart = async() => {
+      let cartData = this.state.cart
+      if(cartData){
+        let quantity = 0
+        cartData.Product.forEach(product => {
+          quantity+=product.Quantity
+        });
+        cartData.Quantity = quantity
+        if(localStorage){
+          localStorage.setItem("cart", JSON.stringify(cartData))
+        }
+        if(this.state.user && this.state.user?.UserType == "consumer"){
+          let promise = await shoppingCartApi.addShoppingCart(cartData, {consumerID: this.state?.user?.Consumer?.ID})
+          let response = promise.data
+        }
+      }
+    }
+    
+    deleteProduct = async(product) =>{
+      if(window && window.confirm("are you sure you want to delete this")){
+        try{
+          let cart=this.state.cart;
+          let promise = await shoppingCartApi.deleteProductCart({id: product.ID})
+          let response = promise.data
+          if(localStorage){
+            let index = cart.Product.findIndex(element=> element.ID==product.ID)
+            if(index>-1){
+              cart.Quantity-=cart.Product[index].Quantity
+              cart.Product.splice(index, 1)
+            }
+  
+            localStorage.setItem("cart",JSON.stringify(cart))
+            Router.reload()
+          }
+        }catch(e){
+          console.log(e)
+        }
+      }
+    }
+
+    checkout = async() => {
+      
     }
   
   render() {
@@ -121,7 +173,7 @@ export default class index extends Component {
                               onClick={() => {
                                 this.setState({cartCount: this.state.cartCount - 1})
                                 product.Quantity-=1
-                                console.log(this.state.product)
+                                this.updateCart()
                               }}
                             >
                               <RemoveIcon fontSize="small" />
@@ -137,7 +189,7 @@ export default class index extends Component {
                                 
                                 this.setState({cartCount: this.state.cartCount+1})
                                 product.Quantity+=1
-                                console.log(this.state.product)
+                                this.updateCart()
                               }}
                             >
                               <AddIcon fontSize="small" />
@@ -146,12 +198,12 @@ export default class index extends Component {
                         </td>
                         <td> 
                             <div className="price-wrap"> 
-                                <var className="price">$</var> 
-                                <small className="text-muted"> $ </small> 
+                                <div className="price text-light">$ {product.Quantity * product.Price}</div> 
+                                <small className="text-muted"> $ {product.Price} each </small> 
                             </div> 
                         </td>
                         <td className="text-right"> 
-                          <Button style={{backgroundColor:'transparent', color:'white'}} className="btn btn-light"> <DeleteIcon /></Button>
+                          <Button style={{backgroundColor:'transparent', color:'white'}} onClick={()=>this.deleteProduct(product)} className="btn btn-light"> <DeleteIcon /></Button>
                           <figcaption className="info">
                           </figcaption>
                         </td>

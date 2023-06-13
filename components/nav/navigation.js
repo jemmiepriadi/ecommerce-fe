@@ -54,12 +54,17 @@ export default class Navigation extends Component {
         cart: cart
       })
       if(cart){
+        let quantity = 0
+        cart.Product.forEach(product => {
+          quantity+=product.Quantity
+        });
         this.setState({
-          cartCount: cart.Quantity
+          cartCount: quantity
         })
       }
     }
 
+    
   }
 
   logout = () => {
@@ -89,7 +94,7 @@ export default class Navigation extends Component {
 
             <nav className={style.header__nav}>
               
-              {<NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
+              {!this.state.isSignedIn&& <NavLink className={style.header__option} onClick={() => this.props.handleChange("showLoginModal", true)}>
                 <span className={style.header__optionLineOne}><AccountCircleIcon /></span>
                 <span className={style.header__optionLineTwo}>Sign In</span>
               </NavLink>}
@@ -120,11 +125,11 @@ export default class Navigation extends Component {
               </NavLink>}
               
             
-              <NavLink href='/shopping-cart' className={style.header__optionBasket}>
+              { this.state.user?.UserType !='seller' && <NavLink href='/shopping-cart' className={style.header__optionBasket}>
                 <Badge badgeContent={this.state.cartCount} color='secondary'>
                   <ShoppingBasketIcon />
                 </Badge>
-              </NavLink>
+              </NavLink>}
               
               {this.state.isSignedIn && <NavLink  className={style.header__option} onClick={() => {this.logout()}}>
                 <span className={style.header__optionLineOne}><LogoutIcon /></span>
