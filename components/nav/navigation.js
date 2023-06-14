@@ -16,6 +16,8 @@ import { deleteCookie, getCookie } from 'cookies-next';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Router from 'next/router';
 import jwtDecode from 'jwt-decode';
+import Search from '../../pages/search';
+import { Navigate } from 'react-router-dom';
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -26,6 +28,7 @@ export default class Navigation extends Component {
         showLoginModal: false,
         showRegisterModal:false,
         showAccountModal: false,
+        name: "",
         user:{},
         cart:{}
       }
@@ -77,6 +80,12 @@ export default class Navigation extends Component {
     }
   }
 
+  handleChange(fieldName, value) {
+    this.setState({
+        [fieldName]: value,
+    })
+  }
+
   logout = () => {
     if(window.confirm("Are you sure to logout?")){
       deleteCookie("auth_token")
@@ -84,8 +93,12 @@ export default class Navigation extends Component {
         localStorage.removeItem("user")
       }
     }
-    Router.reload()
+    Router.push('/')
     return
+  }
+
+  search = async() => {
+        window.location.href='/search?name='+this.state.name
   }
   
   render() {
@@ -96,8 +109,8 @@ export default class Navigation extends Component {
               <a href="/">E-SHOP</a>
             </h1>
             <div className={style.header__search}>
-              <input className={style.header__searchInput} type="text" />
-              <Button className={style.header__searchIcon}>
+              <input className={style.header__searchInput} type="text" onKeyDown={(event)=>{if(event.key=='Enter'){this.search()}}} onChange={e=>this.handleChange("name", e.target.value)} />
+              <Button className={style.header__searchIcon} onClick={()=>this.search()}>
                 <SearchIcon  />
               </Button>
             </div>

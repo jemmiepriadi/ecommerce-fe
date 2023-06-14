@@ -198,10 +198,10 @@ export default class index extends Component {
                 if(localStorage.getItem("orders")){
                     input.concat(localStorage.getItem("orders"))
                 }
-                localStorage.setItem("orders", input)
+                localStorage.setItem("orders", JSON.stringify(input))
                 localStorage.removeItem("cart")
             }
-            // Router.push('/order-history')
+            Router.push('/order-history')
         }catch(e){
             
         }

@@ -27,6 +27,7 @@ export default class index extends Component {
             page:1,
             user:{},
             orders:[],
+            status:"",
             totalPage: 1,
             product:{},
             totalRows:1,
@@ -86,8 +87,12 @@ export default class index extends Component {
             }catch(e){
         
             }
-          }else if((jwtDecode(getCookie("auth_token")).exp * 1000 )- 60000 <= Date.now()){
-            // let 
+          }else if(!getCookie('auth_token')||(getCookie('auth_token') && (jwtDecode(getCookie("auth_token")).exp * 1000 )- 60000 <= Date.now())){
+            let orders = localStorage.getItem('orders')
+            this.setState({
+              orders:orders,
+              isSignedIn: false,
+            })
           }
         }
       }
@@ -126,11 +131,11 @@ export default class index extends Component {
         {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
         {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
         {this.state.showAccountModal &&  <AccountModal user={this.state.user} show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
-        {this.state.showProductOrderModal &&  <ProductModalOrder user={this.state.user} product={this.state.product} show={this.state.showProductOrderModal} closeProductModalOrder={this.closeProductModalOrder}/>}
+        {this.state.showProductOrderModal &&  <ProductModalOrder user={this.state.user} product={this.state.product} order={this.state.status} show={this.state.showProductOrderModal} closeProductModalOrder={this.closeProductModalOrder}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>
         <div className={style.app}>
             <InfiniteScroll
-                    dataLength={this.state.totalRows}
+                    dataLength={this.state.isSignedIn ? this.state.totalRows :this.state.orders.length}
                     next={this.fetchData}
                     hasMore={this.state.page<this.state.totalPage}
                     loader={<p style={{textAlign:'center'}}>Loading...</p>}
@@ -141,11 +146,6 @@ export default class index extends Component {
             <tr className="small text-uppercase">
               <th scope="col">Product</th>
               <th scope="col" className="text-right" width="200">Status</th>
-              {this.state.user.UserType == "seller" &&
-                <th scope='col'>
-
-                </th>
-                }
                 <th scope="col" className="text-right" >
                   Date
                 </th>
@@ -160,6 +160,7 @@ export default class index extends Component {
                 <tr style={{borderTop:'1px solid #eaeaea'}} onClick={()=>{
                   this.handleChange('showProductOrderModal', true)
                   this.handleChange('product', order.Product)
+                  this.handleChange("status", order.Status)
                   }}> 
                     <td >
                         <figure className="itemside">

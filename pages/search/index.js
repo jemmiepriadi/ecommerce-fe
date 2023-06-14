@@ -1,28 +1,32 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.css'
-import Navigation from '../components/nav/navigation'
-import LoginModal from '../components/auth/loginModal';
-import { Component } from 'react';
-import RegisterModal from '../components/auth/registerModal';
-import AccountModal from '../components/account';
+import styles from '../../styles/Home.module.css'
+import { Component, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import * as authApi from '../constant/apis/auth'
-import * as productApi from '../constant/apis/product'
+import * as authApi from '../../constant/apis/auth'
+import * as productApi from '../../constant/apis/product'
 import Router, { useRouter } from 'next/router';
+import AccountModal from '../../components/account';
+import RegisterModal from '../../components/auth/registerModal';
+import LoginModal from '../../components/auth/loginModal';
+import Navigation from '../../components/nav/navigation';
 
 export default function Search(){
     const router = useRouter()
+    const [name, setName] = useState()
     useEffect(()=>{
+      console.log("hahahha")
+      setName(router.query.name)
+      console.log(router.query.name)
     },[router.isReady])
     return(
       <div>
-        {router.isReady &&<SearchBody productId={router.query.productId}/>}
+        {router.isReady &&<SearchBody name={name}/>}
       </div>
     )
 }
 
-export default class SearchBody extends Component {
+class SearchBody extends Component {
   constructor(props) {
     super(props);
       this.state = {
@@ -32,6 +36,7 @@ export default class SearchBody extends Component {
         showRegisterModal:false,
         showAccountModal: false,
         products: [],
+        name:"",
         page:1,
         totalPage: 1,
         totalRows:1
@@ -62,6 +67,9 @@ export default class SearchBody extends Component {
 }
 
   componentDidMount = async () => {
+    this.setState({
+      name: Router.query.name
+    })
     if(localStorage){
       let token = localStorage.getItem("auth_token")
       if(token && token!=""){
@@ -72,7 +80,7 @@ export default class SearchBody extends Component {
       }
     }
     try{
-      const promise = await productApi.getAllProducts({page:this.state.page})
+      const promise = await productApi.getAllProducts({name: Router.query.name,page:this.state.page})
       const data = promise.data.data?.data
       this.setState({
         products: data,
@@ -90,12 +98,12 @@ export default class SearchBody extends Component {
     try{
       let page = this.state.page+1
       if(page>this.state.totalPage)return
-      const promise = await productApi.getAllProducts({page:page})
+      const promise = await productApi.getAllProducts({name: Router.query.name,page:page})
       this.setState({
         page: page
       })
       
-      const data = promise.data.data?.data
+      const data = promise.data.data
       
       let products = this.state.products
       products = products.concat(data)
@@ -119,12 +127,8 @@ export default class SearchBody extends Component {
         </Head>
   
         <main className={styles.main}>
-          <h1 className={styles.title}>
-            Welcome to <a href="/">E-SHOP!</a>
-          </h1>
-  
-          <p className={styles.description}>
-            Best Products Here By Searching
+           <p >
+            Searching Product '{Router.query.name}'
           </p>
   
           {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
@@ -135,13 +139,12 @@ export default class SearchBody extends Component {
             dataLength={this.state.totalRows}
             next={this.fetchData}
             hasMore={this.state.page<this.state.totalPage}
-            loader={<p style={{textAlign:'center'}}>Loading...</p>}
+            loader={this.state.products.length > 0 && <p style={{textAlign:'center'}}>Loading...</p>}
             endMessage={<p style={{textAlign:'center'}}>No more data to load.</p>}>
               <div className={styles.grid}>
                 {this.state.products.map((product, i)=>{
                 return (
                   <div key={product.ID}
-                    // href={''}
                     onClick={()=>{
                       Router.push( { 
                         pathname:'/product/'+ product.ID,
