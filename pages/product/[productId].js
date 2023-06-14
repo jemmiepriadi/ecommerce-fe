@@ -109,12 +109,14 @@ class ProductDetailBody extends Component {
         }
       }else{
         totalCart = this.state.cartCount
+        let cart = {
+          consumerID: this.state.user ? this.state.user.Consumer.ID : null ,
+          Quantity: totalCart,
+          Product:[this.state.product]
+        }
+        cartData = cart
       }
-      let cart = {
-        consumerID: this.state.user ? this.state.user.Consumer.ID : null ,
-        Quantity: totalCart,
-        Product:[this.state.product]
-      }
+      
       if(localStorage){
         localStorage.setItem("cart", JSON.stringify(cartData))
       }

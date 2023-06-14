@@ -105,7 +105,6 @@ class ProductForm extends Component {
         formData.append('image', this.state.image)
       //update
       if(this.props.product.ID){
-        console.log(this.props.product.ID)
         await productApi.updateProduct(formData,{id: this.props.product.ID})
       }else{
         await productApi.uploadProduct(formData)

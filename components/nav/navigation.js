@@ -15,6 +15,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import { deleteCookie, getCookie } from 'cookies-next';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Router from 'next/router';
+import jwtDecode from 'jwt-decode';
 
 export default class Navigation extends Component {
   constructor(props) {
@@ -37,34 +38,43 @@ export default class Navigation extends Component {
   
   componentDidMount = () => {
     let token = getCookie("auth_token")
-      if(token && token!=""){
+      if((token && token!="") && !((jwtDecode(getCookie("auth_token")).exp * 1000 )- 60000 <= Date.now())){
 
         this.setState({
           isSignedIn:true
         })
       }
-    if(localStorage){
-      let user = JSON.parse(localStorage.getItem("user"))
-      this.setState({
-        user: user
-      })
-
-      let cart = JSON.parse(localStorage.getItem("cart"))
-      this.setState({
-        cart: cart
-      })
-      if(cart){
-        let quantity = 0
-        cart.Product.forEach(product => {
-          quantity+=product.Quantity
-        });
+      else{
         this.setState({
-          cartCount: quantity
+          isSignedIn:false
         })
-      }
     }
 
-    
+      
+    if(localStorage){
+      if(localStorage.getItem("user")){
+        let user = JSON.parse(localStorage.getItem("user"))
+        this.setState({
+          user: user
+        })
+      }
+      
+      if(localStorage.getItem("cart")){
+        let cart = JSON.parse(localStorage.getItem("cart"))
+        this.setState({
+          cart: cart
+        })
+        if(cart){
+          let quantity = 0
+          cart.Product.forEach(product => {
+            quantity+=product.Quantity
+          });
+          this.setState({
+            cartCount: quantity
+          })
+        }
+      }
+    }
   }
 
   logout = () => {

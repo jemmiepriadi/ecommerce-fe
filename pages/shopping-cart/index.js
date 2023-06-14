@@ -55,7 +55,7 @@ export default class index extends Component {
   componentDidMount =async () => {
       let user
       if(localStorage){
-         user = JSON.parse(localStorage.getItem("user"))
+         user = localStorage.getItem("user")!=null ? JSON.parse(localStorage.getItem("user")): null
         this.setState({
           user: user,
         })
@@ -66,7 +66,7 @@ export default class index extends Component {
           }
         }
 
-        let cart = JSON.parse(localStorage.getItem("cart"))
+        let cart = localStorage.getItem("cart") != null ? JSON.parse(localStorage.getItem("cart")) : null
         if(cart){
           this.setState({
             cart: cart,

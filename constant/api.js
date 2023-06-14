@@ -11,7 +11,7 @@ export const CREATE_PRODUCT = PRODUCT_URL + '/create'
 export const UPDATE_PRODUCT = PRODUCT_URL + '/update'
 export const DELETE_PRODUCT = PRODUCT_URL + '/delete'
 
-export const ORDER_URL = API_V1 + "api/orders"
+export const ORDER_URL = API_V1 + "orders"
 export const UPDATE_ORDER = ORDER_URL + '/update'
 
 export const CART_URL = API_V1 + "shoppingcart"
