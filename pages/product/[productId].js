@@ -122,11 +122,13 @@ class ProductDetailBody extends Component {
       }
       if(this.state?.user && this.state?.user?.Consumer?.ID){
         await shoppingCartApi.addShoppingCart(cartData, {consumerID: this.state?.user?.Consumer?.ID}).then(
-          Router.push('/shopping-cart')
 
         )
+        
         let response = promise?.data
+
       }
+      Router.push('/shopping-cart')
 
     }catch(e){
       console.log(e)

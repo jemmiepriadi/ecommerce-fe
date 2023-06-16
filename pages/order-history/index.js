@@ -88,7 +88,8 @@ export default class index extends Component {
         
             }
           }else if(!getCookie('auth_token')||(getCookie('auth_token') && (jwtDecode(getCookie("auth_token")).exp * 1000 )- 60000 <= Date.now())){
-            let orders = localStorage.getItem('orders')
+            let orders = JSON.parse(localStorage.getItem('orders'))
+            if(!orders)return
             this.setState({
               orders:orders,
               isSignedIn: false,
@@ -153,7 +154,7 @@ export default class index extends Component {
             </tr>
           </thead>
           <tbody style={{cursor:'pointer'}}>
-            {this.state.orders.map(order=>{
+            {this.state.orders?.map(order=>{
               let date = new Date(order.CreatedAt)
               date = date.toDateString()
               return(

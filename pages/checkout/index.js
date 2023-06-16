@@ -174,11 +174,11 @@ export default class index extends Component {
         data.city = this.state.city
         data.zipcode = parseInt(this.state.zipcode)
         data.state = this.state.state
-        data.status = null
+        data.status = ""
         data.phoneNumber = this.state.phoneNumber
         data.paymentInfo = parseInt(this.state.paymentInfo)
         data.payment = this.state.payment?.value
-        data.consumerID = this.state.user.Consumer.ID
+        data.consumerID = this.state.user?.Consumer?.ID
         data.Product = []
         let arrData = this.state.arrData
 
@@ -190,13 +190,10 @@ export default class index extends Component {
             input.push(data)
         }
         try{
-            
-            if(this.state.isSignedIn){
-                const promise = await orderApi.addOrder(input)
-            }
+            const promise = await orderApi.addOrder(input)
             if(localStorage){
-                if(localStorage.getItem("orders")){
-                    input.concat(localStorage.getItem("orders"))
+                if(JSON.parse(localStorage.getItem("orders"))){
+                    input = input.concat(JSON.parse(localStorage.getItem("orders")))
                 }
                 localStorage.setItem("orders", JSON.stringify(input))
                 localStorage.removeItem("cart")
@@ -215,7 +212,7 @@ export default class index extends Component {
     ]
     return (
         <div className={styles.container}>
-            {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
+        {this.state.showLoginModal &&  <LoginModal show={this.state.showLoginModal} closeLoginModal={this.closeLoginModal}/>}
         {this.state.showRegisterModal &&  <RegisterModal show={this.state.showRegisterModal} closeRegisterModal={this.closeRegisterModal}/>}
         {this.state.showAccountModal &&  <AccountModal user={this.state.user} show={this.state.showAccountModal} closeAccountModal={this.closeAccountModal}/>}
         <Navigation handleChange = {(field, value) => this.handleChange(field, value)} closeLoginModal={this.closeLoginModal}/>

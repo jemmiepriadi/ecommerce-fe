@@ -54,6 +54,7 @@ class Body extends Component {
                 if(!localStorage.getItem("address") && (user.Address && user.Address != ""))localStorage.setItem('address', user.Address)
                 if(!localStorage.getItem("phoneNumber") && (user.PhoneNumber && user.PhoneNumber != ""))localStorage.setItem('phoneNumber', user.PhoneNumber)
             }
+            window.alert('Login successfull')
             Router.reload()
         } catch (e) {
              console.log(e)
